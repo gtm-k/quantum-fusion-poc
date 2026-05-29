@@ -1,0 +1,41 @@
+{
+  "experiment": "H2 ground-state VQE \u2014 simulator-optimal parameters",
+  "molecule": "H2",
+  "bond_length_angstrom": 0.735,
+  "basis": "STO-3G",
+  "hamiltonian_source": "O'Malley et al., Phys. Rev. X 6, 031007 (2016), Appendix B",
+  "ansatz": {
+    "kind": "efficient_su2",
+    "num_qubits": 2,
+    "reps": 2,
+    "entanglement": "linear",
+    "num_parameters": 12
+  },
+  "optimizer": {
+    "method": "COBYLA",
+    "maxiter": 300,
+    "rhobeg": 0.5,
+    "rng_seed": 7
+  },
+  "simulator": "qiskit StatevectorEstimator (noiseless)",
+  "final_parameters": [
+    4.187674479995082,
+    5.2543574125287185,
+    4.8250374620261045,
+    1.557443535993903,
+    1.9303824201015014,
+    6.384989814849837,
+    0.05241325012891884,
+    4.712514639987678,
+    4.531681329494167,
+    3.5972569401816235,
+    1.8135161001505538,
+    1.6399773063104284
+  ],
+  "final_energy_ha": -1.8572750277570762,
+  "exact_eigenvalue_ha": -1.8572750302023795,
+  "vqe_error_ha": 2.4453032931859298e-09,
+  "vqe_error_nha": 2.4453032931859298,
+  "cost_evaluations": 157,
+  "generated_at_utc": "2026-05-28T23:25:45.234515+00:00"
+}

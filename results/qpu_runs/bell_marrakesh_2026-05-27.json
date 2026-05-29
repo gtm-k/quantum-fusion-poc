@@ -1,0 +1,36 @@
+{
+  "experiment": "Bell state preparation and measurement",
+  "circuit": {
+    "qubits": 2,
+    "gates": ["H(q0)", "CX(q0, q1)", "measure_all"],
+    "expected_outcomes": ["00", "11"],
+    "ideal_distribution": {"00": 0.5, "11": 0.5, "01": 0.0, "10": 0.0}
+  },
+  "execution": {
+    "backend": "ibm_marrakesh",
+    "backend_family": "Heron r2",
+    "backend_qubits": 156,
+    "job_id": "d8bccr4e6kns73aasfi0",
+    "submitted": "2026-05-27",
+    "submitted_via": "qiskit-ibm-runtime SamplerV2",
+    "channel": "ibm_quantum_platform",
+    "plan": "open (free tier)",
+    "shots": 1024,
+    "transpiler_optimization_level": 1
+  },
+  "raw_counts": {
+    "00": 493,
+    "11": 503,
+    "01": 9,
+    "10": 19
+  },
+  "analysis": {
+    "correct_outcomes_total": 996,
+    "spurious_outcomes_total": 28,
+    "error_rate_percent": 2.73,
+    "correct_outcomes_fraction": 0.9727,
+    "interpretation": "The 28 spurious 01/10 counts (2.73%) are the noise signature — they would be 0 in a noiseless Bell state. This is single-circuit measurement noise on Heron r2; the noise grows roughly linearly with two-qubit-gate depth, which is why VQE on noisy hardware is challenging."
+  },
+  "retention_note": "IBM Open plan typically retains job records for ~30 days. After roughly 2026-06-26, the job_id above may no longer be retrievable from the IBM job archive. The raw_counts in this file are the durable record of the experiment.",
+  "reproduce": "See notebooks/01_hello_quantum.ipynb. Set IBM_QUANTUM_TOKEN env var, then run cells 1-5. The least-busy backend and shot counts will differ slightly on each run; the qualitative signature (high 00/11, low 01/10) will be the same."
+}

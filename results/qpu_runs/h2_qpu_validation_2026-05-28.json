@@ -1,0 +1,18 @@
+{
+  "experiment": "H2 VQE \u2014 QPU single-point validation at simulator-optimal theta*",
+  "loaded_from": "h2_optimal_params.json",
+  "backend": "ibm_marrakesh",
+  "backend_qubits": 156,
+  "job_id": "d8cd09j8amns73bjcan0",
+  "shots": 4096,
+  "transpiler_optimization_level": 1,
+  "mitigation": "none",
+  "E_sim_ha": -1.8572750277570762,
+  "E_qpu_ha": -1.8266352903906158,
+  "delta_E_ha": 0.030639737366460418,
+  "delta_E_mHa": 30.639737366460416,
+  "delta_E_meV": 833.7497279543855,
+  "interpretation": "delta_E is the lumped hardware-cost: shot noise + readout error + gate errors + transpilation effects + backend drift. No mitigation.",
+  "executed_at_utc": "2026-05-28T23:31:05.685794+00:00",
+  "retention_note": "IBM Open plan typically retains job records for ~30 days."
+}

@@ -1,0 +1,577 @@
+{
+  "experiment": "WH- ground-state VQE \u2014 simulator-optimal parameters",
+  "molecule": "WH-",
+  "bond_length_angstrom": 1.73,
+  "bond_length_anchor_note": "1.73 A is the literature equilibrium for *neutral* WH used here as a grid anchor. See notebook 03 Step 1 \u2014 this is not a prediction of the WH- equilibrium bond length.",
+  "basis": {
+    "W": "lanl2dz (ECP-replaced)",
+    "H": "STO-3G"
+  },
+  "active_space": "CAS(4 electrons, 4 spatial orbitals)",
+  "mapper": "ParityMapper with Z2 tapering",
+  "circuit_qubits": 6,
+  "pauli_terms": 95,
+  "energy_offset_ha": -65.46755503679188,
+  "hamiltonian_pauli_op": [
+    {
+      "pauli": "IIIIII",
+      "coeff_real": -1.6046130989351157,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIIIIZ",
+      "coeff_real": 0.0554361629328211,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIIIZZ",
+      "coeff_real": -0.0004037735927405228,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIIXXZ",
+      "coeff_real": 0.018424439307520874,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIIYYI",
+      "coeff_real": 0.018424439307520874,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIIZZI",
+      "coeff_real": -0.048632773843805724,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIIZII",
+      "coeff_real": 0.027410787437752732,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIZIII",
+      "coeff_real": 0.05543616293282112,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IZZIII",
+      "coeff_real": -0.0004037735927404916,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XXZIII",
+      "coeff_real": 0.018424439307520905,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "YYIIII",
+      "coeff_real": 0.018424439307520905,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZZIIII",
+      "coeff_real": -0.04863277384380568,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZIIIII",
+      "coeff_real": 0.027410787437752833,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIIIZI",
+      "coeff_real": 0.10430613077948636,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIIXXI",
+      "coeff_real": 0.011776716021624688,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIIYYZ",
+      "coeff_real": 0.011776716021624688,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIIZZZ",
+      "coeff_real": 0.09194952462131478,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIIZIZ",
+      "coeff_real": 0.10872834019674724,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIZIIZ",
+      "coeff_real": 0.11178687802367698,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IZZIIZ",
+      "coeff_real": 0.07185206595806709,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XXZIIZ",
+      "coeff_real": 0.013719049827313602,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "YYIIIZ",
+      "coeff_real": 0.013719049827313602,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZZIIIZ",
+      "coeff_real": 0.03992416652714899,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZIIIIZ",
+      "coeff_real": 0.07467984969368487,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IZXIZX",
+      "coeff_real": 0.0035694354171949853,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIXIZX",
+      "coeff_real": -0.0035694354171949853,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IZXIIX",
+      "coeff_real": -0.0035694354171949853,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIXIIX",
+      "coeff_real": 0.0035694354171949853,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XXXIZX",
+      "coeff_real": -0.0005829916271102035,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "YXYIZX",
+      "coeff_real": -0.0005829916271102035,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XXXIIX",
+      "coeff_real": 0.0005829916271102035,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "YXYIIX",
+      "coeff_real": 0.0005829916271102035,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZXXZXX",
+      "coeff_real": 0.0001342566829482035,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IYYZXX",
+      "coeff_real": 0.0001342566829482035,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZXXIYY",
+      "coeff_real": 0.0001342566829482035,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IYYIYY",
+      "coeff_real": 0.0001342566829482035,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IZXXXX",
+      "coeff_real": -0.0005829916271102035,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIXXXX",
+      "coeff_real": 0.0005829916271102035,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IZXYXY",
+      "coeff_real": -0.0005829916271102035,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIXYXY",
+      "coeff_real": 0.0005829916271102035,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XXXXXX",
+      "coeff_real": 0.0016011438081971403,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "YXYXXX",
+      "coeff_real": 0.0016011438081971403,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XXXYXY",
+      "coeff_real": 0.0016011438081971403,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "YXYYXY",
+      "coeff_real": 0.0016011438081971403,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIZIZZ",
+      "coeff_real": 0.07185206595806709,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IZZIZZ",
+      "coeff_real": 0.0601550581309791,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XXZIZZ",
+      "coeff_real": 0.007781669527300457,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "YYIIZZ",
+      "coeff_real": 0.007781669527300457,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZZIIZZ",
+      "coeff_real": 0.03734822960985484,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZIIIZZ",
+      "coeff_real": 0.060656841152164055,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZXZZXZ",
+      "coeff_real": 0.0016985952985953086,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IXIZXZ",
+      "coeff_real": -0.0016985952985953086,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZXZIXI",
+      "coeff_real": -0.0016985952985953086,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IXIIXI",
+      "coeff_real": 0.0016985952985953086,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XZIZXZ",
+      "coeff_real": 0.000640091619346272,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XIIZXZ",
+      "coeff_real": -0.000640091619346272,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XZIIXI",
+      "coeff_real": -0.000640091619346272,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XIIIXI",
+      "coeff_real": 0.000640091619346272,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIZXXZ",
+      "coeff_real": 0.013719049827313602,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIZYYI",
+      "coeff_real": 0.013719049827313602,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IZZXXZ",
+      "coeff_real": 0.007781669527300457,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IZZYYI",
+      "coeff_real": 0.007781669527300457,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XXZXXZ",
+      "coeff_real": 0.008497226375050059,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "YYIXXZ",
+      "coeff_real": 0.008497226375050059,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XXZYYI",
+      "coeff_real": 0.008497226375050059,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "YYIYYI",
+      "coeff_real": 0.008497226375050059,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZZIXXZ",
+      "coeff_real": 0.0031654170521453863,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZZIYYI",
+      "coeff_real": 0.0031654170521453863,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZIIXXZ",
+      "coeff_real": 0.0116869947310955,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZIIYYI",
+      "coeff_real": 0.0116869947310955,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIZZZI",
+      "coeff_real": 0.03992416652714899,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IZZZZI",
+      "coeff_real": 0.03734822960985484,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XXZZZI",
+      "coeff_real": 0.0031654170521453863,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "YYIZZI",
+      "coeff_real": 0.0031654170521453863,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZZIZZI",
+      "coeff_real": 0.03684900090648676,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZIIZZI",
+      "coeff_real": 0.04053231200084018,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZXZXZI",
+      "coeff_real": 0.000640091619346272,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IXIXZI",
+      "coeff_real": -0.000640091619346272,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZXZXII",
+      "coeff_real": -0.000640091619346272,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IXIXII",
+      "coeff_real": 0.000640091619346272,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XZIXZI",
+      "coeff_real": 0.004508811762225924,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XIIXZI",
+      "coeff_real": -0.004508811762225924,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XZIXII",
+      "coeff_real": -0.004508811762225924,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XIIXII",
+      "coeff_real": 0.004508811762225924,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IIZZII",
+      "coeff_real": 0.07467984969368487,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IZZZII",
+      "coeff_real": 0.060656841152164055,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XXZZII",
+      "coeff_real": 0.0116869947310955,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "YYIZII",
+      "coeff_real": 0.0116869947310955,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZZIZII",
+      "coeff_real": 0.04053231200084018,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZIIZII",
+      "coeff_real": 0.06824643492729832,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "IZIIII",
+      "coeff_real": 0.10430613077948636,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "XXIIII",
+      "coeff_real": 0.011776716021624688,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "YYZIII",
+      "coeff_real": 0.011776716021624688,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZZZIII",
+      "coeff_real": 0.09194952462131478,
+      "coeff_imag": 0.0
+    },
+    {
+      "pauli": "ZIZIII",
+      "coeff_real": 0.10872834019674724,
+      "coeff_imag": 0.0
+    }
+  ],
+  "ansatz": {
+    "kind": "efficient_su2",
+    "num_qubits": 6,
+    "reps": 4,
+    "entanglement": "full",
+    "num_parameters": 60
+  },
+  "optimizer": {
+    "method": "COBYLA",
+    "maxiter": 2000,
+    "rhobeg": 0.3,
+    "rng_seed": 7
+  },
+  "simulator": "qiskit StatevectorEstimator (noiseless)",
+  "final_parameters": [
+    0.0028519563506621665,
+    3.1324037233438213,
+    1.9119082034150188,
+    -1.5730065085830105,
+    -1.5690751932400524,
+    2.8427806198165833,
+    -2.929343181243735,
+    2.10700036231989,
+    2.3090797098820444,
+    0.02726147091126353,
+    -0.7210302491593766,
+    -0.9780630663641205,
+    -1.6302238534226292,
+    0.06912869339948553,
+    0.8467027889124868,
+    0.9626001997183268,
+    2.1463160669247894,
+    1.2175536584606326,
+    1.4074847038596663,
+    3.1192435145986726,
+    -1.5599655887330337,
+    -1.5726764481789464,
+    1.2913368680693162,
+    -2.9443128236167575,
+    -1.6907217682130442,
+    0.02129591694713705,
+    0.5679748597941306,
+    2.0523375116317233,
+    1.6433405014450082,
+    1.0562357598093144,
+    -0.3647002360909166,
+    -1.7159277535632889,
+    -2.126859828265152,
+    -2.174069605643618,
+    2.091817600612567,
+    -2.251251748719951,
+    -0.2800154769329812,
+    -3.3494493499439146,
+    1.5736614038290988,
+    -1.7377630955900625,
+    -1.8635573199061244,
+    2.6316518521739116,
+    0.33359742368946943,
+    3.185400688327007,
+    1.582768847596384,
+    1.2341659425541442,
+    -2.7384545552397377,
+    1.066569167360492,
+    1.5121805040907337,
+    1.3544554077327646,
+    0.1381534147044226,
+    -0.0634082358304514,
+    -3.161699818776475,
+    -0.08238897752158053,
+    -0.8867243552010197,
+    -2.5249016877414867,
+    2.607043302296935,
+    -0.11964649379449821,
+    4.238069254440722,
+    0.829836563992108
+  ],
+  "final_electronic_energy_ha": -1.975647624152098,
+  "final_total_energy_ha": -67.44320266094398,
+  "exact_casci_electronic_ha": -1.9869542065741703,
+  "exact_casci_total_ha": -67.45450924336605,
+  "vqe_error_ha": 0.011306582422072387,
+  "vqe_error_mha": 11.306582422072387,
+  "vqe_error_mev": 307.6677814091102,
+  "cost_evaluations": 2000,
+  "generated_at_utc": "2026-05-28T23:38:21.010720+00:00"
+}

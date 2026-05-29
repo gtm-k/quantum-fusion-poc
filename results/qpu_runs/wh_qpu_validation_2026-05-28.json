@@ -1,0 +1,20 @@
+{
+  "experiment": "WH- VQE \u2014 QPU single-point validation at simulator-optimal theta*",
+  "loaded_from": "wh_optimal_params.json",
+  "backend": "ibm_fez",
+  "backend_qubits": 156,
+  "job_id": "d8cd4hajki0s73ar3jj0",
+  "shots": 4096,
+  "transpiler_optimization_level": 1,
+  "mitigation": "none",
+  "E_sim_electronic_ha": -1.975647624152098,
+  "E_sim_total_ha": -67.44320266094398,
+  "E_qpu_electronic_ha": -1.7758087310524886,
+  "E_qpu_total_ha": -67.24336376784437,
+  "delta_E_ha": 0.19983889309961,
+  "delta_E_mHa": 199.83889309961,
+  "delta_E_meV": 5437.893307104194,
+  "interpretation": "delta_E is the lumped hardware-cost on a 6-qubit, ~30-layer-deep EfficientSU2(reps=4, full) circuit: shot noise + readout error + compounding gate errors + transpilation effects + backend drift. Expected to be substantially larger than the H2 (2-qubit, shallow) delta_E. The H2 and WH- jobs landed on different physical backends (H2 on ibm_marrakesh, WH- on ibm_fez) but the same Heron r2 generation, so the comparison reflects circuit-depth scaling and not a same-chip apples-to-apples noise measurement. No mitigation.",
+  "executed_at_utc": "2026-05-28T23:40:40.443548+00:00",
+  "retention_note": "IBM Open plan typically retains job records for ~30 days."
+}

@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual envs (multiple common names — repo never ships its own venv)
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+
+# Local credentials — belt and suspenders, the env-var pattern in 01_hello
+# is the primary defence. Never commit anything resembling a token.
+.env
+.env.*
+*.token
+credentials.json
+qiskit-ibm.json
+.qiskit/
+
+# Chemistry intermediates (regenerable; can be large)
+*.fcidump
+*.molden
+*.chk
+
+# Raw QPU job dumps (can be tens of MB; the summary CSVs are what we ship)
+results/raw/
+*.h5
+
+# OS noise
+.DS_Store
+Thumbs.db
+bash.exe.stackdump
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~

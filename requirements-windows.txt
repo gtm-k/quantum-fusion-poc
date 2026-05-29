@@ -1,0 +1,23 @@
+# Windows venv: runs 01_hello_quantum.ipynb and 02_h2_binding.ipynb.
+# pyscf has no Windows wheels (and source build fails) — see requirements-wsl.txt
+# for the chemistry stack used by 03_wh_binding.ipynb.
+#
+# Pinned to the versions this POC was developed against. Loosen to ">=" only
+# after you've reproduced the results with looser pins.
+
+qiskit==2.4.1
+qiskit-aer==0.17.2
+qiskit-ibm-runtime==0.47.0
+qiskit-nature==0.7.2
+qiskit-algorithms==0.4.0
+
+numpy==2.4.6
+scipy==1.17.1
+matplotlib==3.10.9
+
+jupyter==1.1.1
+notebook==7.5.6
+ipykernel==7.2.0
+nbformat==5.10.4
+
+pylatexenc==2.10           # circuit pretty-printing

@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Chemistry on a Quantum Computer — A Plain-Language Walkthrough</title>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --fg: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #5d4fc2;
+    --accent-soft: #ebe8f7;
+    --rule: #e5e3df;
+    --code-bg: #f1efea;
+    --callout: #fff7e6;
+    --callout-border: #e9c46a;
+    --warn: #fff0f0;
+    --warn-border: #d96666;
+    --max: 760px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f0e0d;
+      --fg: #e8e6e1;
+      --muted: #989590;
+      --accent: #a89bf2;
+      --accent-soft: #1f1a35;
+      --rule: #2a2825;
+      --code-bg: #1c1a17;
+      --callout: #1f1a0d;
+      --callout-border: #a17b1f;
+      --warn: #2a1414;
+      --warn-border: #c25555;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.7;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 64px 24px 96px;
+  }
+  header.hero {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 32px;
+    margin-bottom: 48px;
+  }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-size: 2.25rem;
+    line-height: 1.2;
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 1.1rem;
+    margin: 0;
+  }
+  h2 {
+    font-size: 1.5rem;
+    margin-top: 56px;
+    margin-bottom: 16px;
+    letter-spacing: -0.01em;
+    border-top: 1px solid var(--rule);
+    padding-top: 40px;
+  }
+  h2:first-of-type { border-top: none; padding-top: 0; }
+  h3 {
+    font-size: 1.15rem;
+    margin-top: 32px;
+    margin-bottom: 8px;
+    color: var(--fg);
+  }
+  h4 {
+    font-size: 0.95rem;
+    margin-top: 24px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  p { margin: 0 0 16px; }
+  ul, ol { margin: 0 0 16px; padding-left: 24px; }
+  li { margin-bottom: 6px; }
+  strong { color: var(--fg); }
+  em.term {
+    font-style: normal;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 0 4px;
+    border-radius: 3px;
+    font-weight: 500;
+  }
+  code {
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 0.88em;
+  }
+  pre {
+    background: var(--code-bg);
+    padding: 16px 18px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-family: "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    margin: 16px 0;
+  }
+  pre code { background: none; padding: 0; }
+  .callout {
+    background: var(--callout);
+    border-left: 3px solid var(--callout-border);
+    padding: 14px 18px;
+    margin: 24px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .callout .label {
+    display: inline-block;
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--callout-border);
+  }
+  .warn {
+    background: var(--warn);
+    border-left: 3px solid var(--warn-border);
+    padding: 14px 18px;
+    margin: 24px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 0.95rem;
+  }
+  .warn .label {
+    display: inline-block;
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--warn-border);
+  }
+  .toc {
+    background: var(--accent-soft);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin-bottom: 48px;
+  }
+  .toc h4 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: var(--accent);
+  }
+  .toc ol {
+    margin: 0;
+    padding-left: 20px;
+  }
+  .toc li {
+    margin-bottom: 4px;
+  }
+  .toc a {
+    color: var(--fg);
+    text-decoration: none;
+  }
+  .toc a:hover { color: var(--accent); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 0.9rem;
+  }
+  th, td {
+    border-bottom: 1px solid var(--rule);
+    padding: 10px 8px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+  .diagram {
+    background: var(--code-bg);
+    padding: 24px;
+    margin: 24px 0;
+    border-radius: 6px;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .diagram svg { max-width: 100%; height: auto; }
+  .ascii {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.78rem;
+    white-space: pre;
+    line-height: 1.4;
+    text-align: left;
+    display: inline-block;
+  }
+  .footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-align: center;
+  }
+  .footer a { color: var(--accent); }
+  .twocol {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  @media (max-width: 600px) {
+    h1 { font-size: 1.75rem; }
+    .twocol { grid-template-columns: 1fr; }
+    .container { padding: 32px 16px 64px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header class="hero">
+  <div class="eyebrow">A plain-language walkthrough</div>
+  <h1>Quantum chemistry on a quantum computer</h1>
+  <p class="subtitle">What we built, why we built it that way, and whether it can run on real IBM Quantum hardware.</p>
+</header>
+
+<nav class="toc">
+  <h4>What's in this page</h4>
+  <ol>
+    <li><a href="#why">Why do this at all — the fusion reactor problem</a></li>
+    <li><a href="#chemistry">What is a "quantum chemistry calculation"?</a></li>
+    <li><a href="#vqe">VQE — the algorithm we're using</a></li>
+    <li><a href="#what-we-built">The three notebooks: a guided tour</a></li>
+    <li><a href="#lessons">Five lessons we hit along the way</a></li>
+    <li><a href="#hardware">Can this run on real IBM Quantum hardware?</a></li>
+    <li><a href="#next">Where to go next</a></li>
+  </ol>
+</nav>
+
+<h2 id="why">1. Why do this at all — the fusion reactor problem</h2>
+
+<p>Inside a fusion reactor like ITER, the inner walls take a beating. Hot plasma (millions of degrees) touches tungsten plates — tungsten because it has the highest melting point of any metal. Hydrogen and its heavy isotope <strong>tritium</strong> from the plasma slam into those walls and some of it gets <strong>stuck</strong>: trapped in microscopic vacancy defects in the tungsten crystal.</p>
+
+<p>That's a problem. Tritium is radioactive, expensive to produce, and the inventory inside the reactor walls becomes a safety, supply, and licensing issue. Engineers need to predict, for every reactor design: <em class="term">how strongly does tritium bind to a tungsten vacancy?</em></p>
+
+<p>That binding energy is the difference between two energies — one for the tritium <em class="term">trapped in the vacancy</em>, one for the tritium <em class="term">free</em>. Compute the first, compute the second, subtract.</p>
+
+<div class="callout">
+  <div class="label">The catch</div>
+  Computing the energy of an arrangement of electrons around tungsten atoms is one of the hardest things in computational science. Tungsten has 74 electrons. They all push on each other (Coulomb repulsion) <em>and</em> they all have to stay quantum-mechanically out of each other's way (Pauli exclusion). Classical computers can do approximations, but for accuracy, the cost grows exponentially with electron count. This is exactly the kind of problem quantum computers were dreamed up for.
+</div>
+
+<h2 id="chemistry">2. What is a "quantum chemistry calculation"?</h2>
+
+<p>A molecule is just a collection of nuclei (heavy, classical) and electrons (light, quantum). What you want to know is the <strong>energy</strong> of the lowest-energy arrangement of those electrons for a given nuclear geometry. This is the <em class="term">ground state energy</em>.</p>
+
+<p>From ground state energies you get everything chemistry cares about:</p>
+<ul>
+  <li><strong>Binding energy</strong> = energy of separated parts minus energy of bonded molecule</li>
+  <li><strong>Bond length</strong> = nuclear geometry that minimizes the energy</li>
+  <li><strong>Reaction rates</strong>, <strong>spectra</strong>, <strong>catalysis</strong>... all from the energy landscape as nuclei move</li>
+</ul>
+
+<p>The math problem is: solve the <strong>Schrödinger equation</strong> <code>H|ψ⟩ = E|ψ⟩</code> for the lowest E. Here <code>H</code> is the <em class="term">Hamiltonian</em> — a mathematical object encoding kinetic energy of all electrons + their attractions to nuclei + their repulsions from each other. The <code>|ψ⟩</code> is the wavefunction (which electron is where, quantum-mechanically). E is the energy number you want.</p>
+
+<p>For a molecule with N electrons, the wavefunction lives in a space of size roughly 2<sup>N</sup>. For H<sub>2</sub> (2 electrons) that's fine. For tungsten (74 electrons) that's 2<sup>74</sup> ≈ 10<sup>22</sup> — bigger than the number of stars in the observable universe. <strong>You cannot store that on any classical computer, ever.</strong></p>
+
+<p>Classical chemistry copes by approximating. <em class="term">Hartree-Fock</em> assumes each electron sees only an average of the others. <em class="term">DFT</em> (density functional theory) replaces the wavefunction with an electron density function. These work pretty well for most chemistry, but they break down for systems with strong electron correlation — which, awkwardly, includes transition metals like tungsten.</p>
+
+<h2 id="vqe">3. VQE — the algorithm we're using</h2>
+
+<p><strong>VQE</strong> stands for <strong>Variational Quantum Eigensolver</strong>. It's the workhorse algorithm for chemistry on today's quantum hardware. Here's the whole idea in one paragraph:</p>
+
+<div class="callout">
+  <div class="label">VQE in one paragraph</div>
+  You build a parameterized quantum circuit — a recipe that, given a set of knobs, prepares some quantum state. You measure the energy of that state (the Hamiltonian's expectation value). A classical optimizer adjusts the knobs to lower the energy. You repeat until the energy stops going down. The lowest energy you reach is your estimate of the ground state.
+</div>
+
+<p>It's basically "hot or cold" but the quantum computer plays the role of the wavefunction holder and energy-measurer, while a classical computer plays the role of the search strategy. This is called a <em class="term">hybrid quantum-classical algorithm</em>.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VQE loop diagram">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+    </marker>
+  </defs>
+  <g font-family="-apple-system,system-ui,sans-serif" font-size="13" fill="currentColor" stroke="currentColor" stroke-width="1.5">
+    <!-- Classical optimizer box -->
+    <rect x="20" y="80" width="180" height="80" rx="6" fill="none"/>
+    <text x="110" y="110" text-anchor="middle" font-weight="600">Classical optimizer</text>
+    <text x="110" y="130" text-anchor="middle" font-size="11" fill="#6b6b6b" stroke="none">(scipy.optimize)</text>
+    <text x="110" y="148" text-anchor="middle" font-size="11" fill="#6b6b6b" stroke="none">picks new parameters</text>
+
+    <!-- Quantum circuit box -->
+    <rect x="440" y="80" width="180" height="80" rx="6" fill="none" stroke="#5d4fc2"/>
+    <text x="530" y="110" text-anchor="middle" font-weight="600" fill="#5d4fc2" stroke="none">Quantum computer</text>
+    <text x="530" y="130" text-anchor="middle" font-size="11" fill="#6b6b6b" stroke="none">prepares state |ψ(θ)⟩</text>
+    <text x="530" y="148" text-anchor="middle" font-size="11" fill="#6b6b6b" stroke="none">measures ⟨ψ|H|ψ⟩</text>
+
+    <!-- Arrows -->
+    <path d="M 200 110 L 435 110" fill="none" marker-end="url(#arrow)"/>
+    <text x="318" y="100" text-anchor="middle" font-size="11" stroke="none">θ (parameters)</text>
+
+    <path d="M 435 140 L 205 140" fill="none" marker-end="url(#arrow)"/>
+    <text x="320" y="158" text-anchor="middle" font-size="11" stroke="none">E (energy)</text>
+
+    <!-- Loop label -->
+    <text x="320" y="200" text-anchor="middle" font-size="12" fill="#6b6b6b" stroke="none">repeat until energy stops going down</text>
+  </g>
+</svg>
+</div>
+
+<h3>What runs on the quantum computer specifically</h3>
+
+<p>Two things only:</p>
+
+<ol>
+  <li><strong>Prepare a quantum state.</strong> Apply a circuit with tunable rotation angles (the parameters θ). The result is a superposition that <em>could</em> be — or could be close to — the ground state wavefunction.</li>
+  <li><strong>Measure the energy of that state.</strong> The Hamiltonian decomposes into a sum of measurable operators (Pauli strings: X, Y, Z, and their products). Measure each one's expectation value, multiply by its coefficient, sum. That gives ⟨ψ|H|ψ⟩, the energy.</li>
+</ol>
+
+<p>Everything else — building the Hamiltonian, picking the next parameters, deciding when to stop — happens on a classical computer.</p>
+
+<h3>Why this matters</h3>
+
+<p>Storing <code>|ψ⟩</code> for 74 electrons would need 10<sup>22</sup> classical numbers. But a quantum computer with N qubits <em>already is</em> a 2<sup>N</sup>-dimensional state space — it stores wavefunctions natively, for free. Measuring expectation values gives you energies. The hard exponential-storage problem disappears.</p>
+
+<p>The hard part that's left is <strong>building a circuit that can actually represent the ground state</strong>, and finding the right knob settings. That's an open research problem and where most VQE work lives.</p>
+
+<h2 id="what-we-built">4. The three notebooks: a guided tour</h2>
+
+<p>We built up from trivial to ambitious. Each notebook stands on its own; together they're a learning ladder.</p>
+
+<h3>Notebook 1 — <code>01_hello_quantum.ipynb</code>: prove the plumbing works</h3>
+
+<p><strong>What it does:</strong> Builds a <em class="term">Bell state</em> — the simplest interesting quantum state, where two qubits are entangled so that measuring one instantly determines the other. Runs it on a local simulator, then (optionally) on a real IBM Quantum machine.</p>
+
+<p><strong>Why first:</strong> Before anything else you need to confirm: do you have credentials, can you reach the IBM Quantum servers, does your circuit compile to a real backend's native gates, can you get results back. The Bell state is two gates (Hadamard + CNOT) — small enough that any failure is your setup, not the physics.</p>
+
+<p><strong>What you learn:</strong> The <code>Sampler</code> primitive for measurement-based outputs. The transpilation pipeline (Qiskit converts your abstract circuit to a backend-specific one). The two execution modes: local <code>AerSimulator</code> (instant, noiseless) and real QPU (queue, noise, real physics).</p>
+
+<h3>Notebook 2 — <code>02_h2_binding.ipynb</code>: the canonical VQE chemistry problem</h3>
+
+<p><strong>What it does:</strong> Computes the binding energy of molecular hydrogen H<sub>2</sub>. The Hamiltonian for H<sub>2</sub> in a minimal basis is famously a 5-term, 2-qubit operator — written down in textbooks. We feed it to VQE, find the ground state, subtract from the separated-atoms reference, get the binding energy.</p>
+
+<p><strong>Why second:</strong> H<sub>2</sub> is the "hello world" of quantum chemistry. The Hamiltonian is published in dozens of papers. The exact ground-state energy is known to 10 decimal places. If your VQE gets it right, your VQE works. If your VQE gets it wrong, you have a bug.</p>
+
+<p><strong>What we got:</strong> VQE converged to the FCI reference within <strong>~2.45 nanohartrees</strong> — far better than chemical accuracy. The binding energy came out 5.55 eV; experiment is 4.52 eV. The 1 eV gap is the famous <strong>STO-3G overbinding error</strong> — STO-3G is a minimal basis set that can't represent the diffuse parts of the electron density. The algorithm is right; the basis is the bottleneck. Important lesson: <em>basis set quality matters more than your quantum algorithm at this scale</em>.</p>
+
+<h3>Notebook 3 — <code>03_wh_binding.ipynb</code>: real tungsten chemistry</h3>
+
+<p><strong>What it does:</strong> The actual W–H prototype. Builds a tungsten hydride molecule (WH<sup>−</sup>), uses an <em class="term">effective core potential</em> to make the 74-electron tungsten tractable, reduces to a small <em class="term">active space</em>, maps to 6 qubits, and runs VQE.</p>
+
+<p><strong>Why third:</strong> This is the actual ambition — chemistry that connects to the fusion problem. Tungsten is a transition metal with strong electron correlation; this is where VQE could in principle outshine classical methods (and where, today, classical methods struggle).</p>
+
+<h4>The pipeline, top to bottom</h4>
+<div class="diagram">
+<div class="ascii">geometry: W + H, 1.73 Å apart                  (you write this)
+        ↓
+pyscf: build Hartree-Fock orbitals             (classical, in WSL)
+        ↓
+FCIDump: dump integrals to a file              (classical)
+        ↓
+qiskit-nature: load integrals, pick active     (4 electrons, 4 orbitals)
+        ↓                                       space — chemically meaningful
+parity mapping + 2-qubit reduction              orbitals only
+        ↓
+6-qubit Hamiltonian, 95 Pauli terms             ← THIS is what VQE sees
+        ↓
+VQE: optimize 60 rotation angles                (60 knobs, classical optimizer)
+        ↓
+ground-state energy estimate                    (compare to exact diagonalization)
+        ↓
+binding energy = E(separated) − E(bound)        (subtract two energies)
+</div>
+</div>
+
+<p><strong>What we got:</strong> A working pipeline that runs end-to-end on real tungsten chemistry. Quantitative summary, with the caveats up front:</p>
+
+<ul>
+  <li>VQE sits roughly <strong>11.3 mHa above the CASCI reference</strong> at the equilibrium geometry — that's ~7 kcal/mol, well above chemical accuracy (1 kcal/mol). Demonstration-grade, not production-grade.</li>
+  <li>The PEC has the right qualitative shape (a single minimum, repulsive at short r, flattening at long r).</li>
+  <li>The minimum on our 0.1-Å grid lands at <strong>r = 1.73 Å</strong>. That's the same grid anchor we use as a reference geometry for neutral WH — it is not a successful prediction of the equilibrium length, it's where the grid happens to fall.</li>
+  <li>The well depth (Approach B, basis-consistent dissociation) is <strong>3.11 eV</strong>.</li>
+</ul>
+
+<div class="warn">
+  <div class="label">Important honesty caveat — read this before quoting any number above</div>
+  The 3.11 eV is <strong>not</strong> the binding energy of WH. It's the well depth of the WH<sup>−</sup> (anion) closed-shell singlet — a different chemical species than what spectroscopy measures (neutral WH ⁶Σ⁺ sextet). The numeric proximity to literature values for neutral WH is <strong>coincidental error cancellation</strong>, not validation. The notebook is a workflow prototype — it proves the algorithm chain runs end-to-end on real tungsten chemistry. It is <strong>not</strong> a publishable binding-energy measurement. See lesson 5 below and the FAQ.
+</div>
+
+<h2 id="lessons">5. Five lessons we hit along the way</h2>
+
+<h3>Lesson 1: pyscf doesn't run on Windows, so we use WSL</h3>
+
+<p><em class="term">pyscf</em> is the open-source quantum chemistry library that builds Hamiltonians from molecular geometry. It has no pre-built Windows wheels and its C source doesn't build cleanly with the Windows toolchain. We tried, it failed. So we set up an Ubuntu environment via <strong>WSL2</strong> (Windows Subsystem for Linux), installed pyscf there, and run our chemistry-heavy notebook inside that environment.</p>
+
+<p>The notebooks live in the normal Windows folder. Only the Python interpreter that runs the tungsten notebook lives in Linux. We made a launcher script (<code>start-wh-jupyter.cmd</code>) that takes care of the WSL plumbing — double-click and a Jupyter URL appears.</p>
+
+<h3>Lesson 2: STO-3G can't describe an H<sup>−</sup> ion (and many other things)</h3>
+
+<p>The "basis set" is the set of mathematical functions you use to describe electron orbitals. STO-3G is the smallest serious basis — three Gaussian functions per atomic orbital. It works for simple, neutral molecules. It fails badly when:</p>
+<ul>
+  <li>You add an electron to make a negative ion (anion) — anions need diffuse functions that STO-3G doesn't have</li>
+  <li>You go to heavy elements — STO-3G is only defined for H through Ar</li>
+  <li>You need accurate energetics — minimal basis means 1+ eV errors</li>
+</ul>
+
+<p>For tungsten we used <strong>LANL2DZ</strong>: a basis specifically for heavy elements with an <em class="term">effective core potential</em> (more on that next). For H we kept STO-3G, which is fine for the bound molecule but fails for the isolated H<sup>−</sup> ion — that mismatch caused our "binding energy" via separated atoms to come out at 9 eV instead of 3 eV.</p>
+
+<h3>Lesson 3: Effective core potentials make heavy elements tractable</h3>
+
+<p>Tungsten has 74 electrons. Most of them are deep in the core, far from any chemistry — they just shield the nucleus and contribute nothing to bond-making. <em class="term">Effective core potentials</em> (ECPs) replace those 60 inner electrons with a fixed potential function. You still get the right physics for the chemically active outer electrons, but the calculation now treats only 14 electrons (the valence ones) explicitly. Massive speedup, with the right physics preserved.</p>
+
+<p>Without ECPs, doing tungsten chemistry at all would be impossible for us. LANL2DZ is one of the standard ECPs — it's been in the literature since the 1980s and is known to work for transition metal compounds.</p>
+
+<h3>Lesson 4: Active space — picking which electrons get the quantum treatment</h3>
+
+<p>Even after ECPs, you can't put 14 electrons into a quantum circuit at 6 qubits. We need to pick a smaller subset — the chemically active ones — and treat them with VQE. The rest get treated by classical Hartree-Fock and held fixed. This is <em class="term">active space</em> selection.</p>
+
+<p>For WH<sup>−</sup>, we picked <strong>CAS(4,4)</strong> — 4 active electrons in 4 active orbitals. The 4 orbitals span the W–H σ-bond region. The other 12 electrons stay in their Hartree-Fock orbitals and contribute as a frozen background.</p>
+
+<p>CAS(4,4) on 4 spatial orbitals = 8 spin orbitals = 8 qubits raw. The <strong>parity mapping</strong> with 2-qubit reduction (using particle-number and parity symmetries) cuts that to 6 qubits. That's our final problem.</p>
+
+<h3>Lesson 5: "It matches the literature" can be a lie even when the numbers agree</h3>
+
+<p>This one came up at the very end. Our notebook produces a well depth of 3.11 eV. The experimental binding energy of WH (neutral) is 2.5–3.2 eV. It looks like a match.</p>
+
+<p><strong>It isn't a match.</strong> We're computing WH<sup>−</sup> (the anion, closed-shell singlet), not WH (the neutral, high-spin sextet). They're <em>different molecules</em>. And our "dissociation energy" comes from a closed-shell singlet that, at large bond length, doesn't even dissociate into the right atomic states — it dissociates into a forced-singlet tungsten (an excited atomic state) instead of ground-state tungsten.</p>
+
+<p>The 3.11 eV is real — a real number from a real calculation — but its agreement with experiment is <strong>coincidental error cancellation</strong>, not physics. The honest framing is: this is a workflow prototype showing the algorithm chain runs on real tungsten chemistry. It's not a literature-comparable binding-energy measurement.</p>
+
+<p>This kind of careful framing — knowing what your number is and isn't — is the difference between a research result and a marketing slide. It cost us nothing to be honest in the notebook output, and it saves you from claiming things you can't defend later.</p>
+
+<h2 id="hardware">6. Can this run on real IBM Quantum hardware?</h2>
+
+<p><strong>Short answer: yes, technically. With caveats that matter.</strong></p>
+
+<h3>The code change</h3>
+
+<p>The simulator we used (<code>StatevectorEstimator</code>) and the real-hardware estimator (<code>EstimatorV2</code> from <code>qiskit_ibm_runtime</code>) share the same V2 primitives interface. Swapping is mechanical:</p>
+
+<pre><code># Before (local simulator, in our notebook today):
+from qiskit.primitives import StatevectorEstimator
+estimator = StatevectorEstimator()
+
+# After (real IBM Quantum QPU):
+from qiskit_ibm_runtime import QiskitRuntimeService, EstimatorV2
+from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+
+service = QiskitRuntimeService()
+backend = service.least_busy(simulator=False, operational=True)
+
+# Real hardware needs you to transpile the circuit to the QPU's native gates
+pm = generate_preset_pass_manager(backend=backend, optimization_level=2)
+ansatz_isa = pm.run(ansatz)
+H_isa = qubit_op.apply_layout(ansatz_isa.layout)
+
+estimator = EstimatorV2(mode=backend)
+# Then your cost function uses (ansatz_isa, H_isa, params) instead of (ansatz, qubit_op, params)
+</code></pre>
+
+<p>That's it. The VQE loop, the optimizer, the cost function — all unchanged.</p>
+
+<h3>What changes in practice</h3>
+
+<table>
+  <thead>
+    <tr><th>Aspect</th><th>Simulator (what we used)</th><th>Real IBM Quantum QPU</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Speed per cost call</strong></td>
+      <td>~50 ms (memory access)</td>
+      <td>~10 s to several minutes (queue + execution)</td>
+    </tr>
+    <tr>
+      <td><strong>Noise</strong></td>
+      <td>None (perfect math)</td>
+      <td>Gate errors ~10⁻³ per CNOT, measurement errors ~1%, decoherence over circuit depth</td>
+    </tr>
+    <tr>
+      <td><strong>Each measurement</strong></td>
+      <td>Returns exact expectation value</td>
+      <td>Returns a noisy estimate from N shots (usually 1024–8192)</td>
+    </tr>
+    <tr>
+      <td><strong>Total VQE run</strong></td>
+      <td>20 seconds for 2000 cost calls</td>
+      <td>Hours to days, depending on queue and shots</td>
+    </tr>
+    <tr>
+      <td><strong>Free tier (Open plan)</strong></td>
+      <td>Unlimited</td>
+      <td>10 minutes of QPU time per month</td>
+    </tr>
+    <tr>
+      <td><strong>Energy accuracy</strong></td>
+      <td>nanohartrees (~10⁻⁹ Ha)</td>
+      <td>~10–100 millihartrees raw; improvable with error mitigation</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Which of our notebooks should you actually try on real hardware?</h3>
+
+<ol>
+  <li><strong><code>01_hello_quantum.ipynb</code></strong> — yes. Already executed on <code>ibm_marrakesh</code> (2026-05-27): the expected entanglement signature was recovered with ~2.7% spurious counts. Section 5 of the notebook contains the ready-to-run QPU submission cell. Uses negligible free-tier minutes.</li>
+  <li><strong><code>02_h2_binding.ipynb</code></strong> — yes, and a script is provided. The companion script <code>scripts/h2_qpu_validation.py</code> runs the train-on-sim, validate-on-QPU pattern (run with <code>sim</code> first to save θ*, then <code>qpu</code> to submit). <strong>Measured 2026-05-28 on <code>ibm_marrakesh</code>:</strong> the unmitigated single-point energy at θ* sits +30.6 mHa = +834 meV above the simulator's nanohartree-precise answer. That's ~20× chemical accuracy, ~3% of the binding energy. Workable as a learning measurement, not yet a publishable result without mitigation.</li>
+  <li><strong><code>03_wh_binding.ipynb</code></strong> — yes, but read this carefully. The companion script <code>scripts/wh_qpu_validation.py</code> runs the same pattern (in WSL because pyscf doesn't build on Windows). <strong>Measured 2026-05-28 on <code>ibm_fez</code>:</strong> the unmitigated single-point energy at θ* sits +199.8 mHa = +5,438 meV above the simulator. <em>That noise number exceeds the well depth itself (~110 mHa).</em> The bare hardware energy is therefore physically uninformative as a binding-energy estimate — it sits well above the dissociation asymptote. The value of the measurement is as a noise-scaling data point (WH⁻ noise is ~6.5× larger than H₂'s on the same hardware generation), not as chemistry. A real VQE chemistry run at this depth needs <strong>error mitigation</strong> (ZNE, PEC) and careful shot budgeting — that's the next ramp.</li>
+</ol>
+
+<h3>What "production VQE chemistry on real hardware" actually looks like in 2026</h3>
+
+<p>The published demonstrations of VQE on real IBM hardware in 2024–2026 typically follow a careful recipe:</p>
+
+<ul>
+  <li><strong>Optimize parameters on simulator first.</strong> Find the approximate optimum classically, where it's cheap.</li>
+  <li><strong>Validate the final point on real hardware.</strong> Use the QPU only for the last few evaluations to check the simulator-optimized state on real silicon.</li>
+  <li><strong>Apply error mitigation.</strong> Zero-Noise Extrapolation (ZNE) or Probabilistic Error Cancellation (PEC) to extrapolate to the noise-free value.</li>
+  <li><strong>Use lots of shots.</strong> 10,000+ per Pauli term, repeated and averaged.</li>
+  <li><strong>Pick the right hardware.</strong> Heron-class processors (the latest IBM QPUs as of 2026) have lower noise; you choose them deliberately.</li>
+</ul>
+
+<p>For the fusion-wall problem at full scale (~200 logical qubits, the actual W-cluster calculation), the consensus is that you need <strong>fault-tolerant hardware</strong> — error rates suppressed by the surface code to ~10⁻¹⁰ — which IBM's roadmap targets around 2029. Today's hardware can demonstrate the algorithm at small scale; it can't yet beat classical methods on a real fusion-relevant calculation.</p>
+
+<div class="callout">
+  <div class="label">The honest framing for "quantum advantage in chemistry"</div>
+  As of 2026, no quantum computer has demonstrably out-performed the best classical methods on any chemistry problem of practical interest. The H<sub>2</sub> and small-molecule VQE demonstrations are <em>algorithmic milestones</em> — proofs that the quantum-classical hybrid framework works — not classical-beating results. The window where quantum will start meaningfully outperforming classical for chemistry is widely expected to open in the late 2020s as fault-tolerant hardware comes online and active spaces of CAS(20,20)+ become tractable on QPUs without exponential simulation cost.
+</div>
+
+<h2 id="next">7. Where to go next</h2>
+
+<h3>If you want to deepen the chemistry</h3>
+<ul>
+  <li><strong>Try LiH next</strong> — 4 active electrons in 6 orbitals, ~12 qubits, runs locally on simulator in minutes. The next rung up from H<sub>2</sub>. Same techniques as our WH notebook.</li>
+  <li><strong>Try a bigger basis</strong> on H<sub>2</sub> — switch from STO-3G to 6-31G or cc-pVDZ. Watch the binding energy converge toward the experimental 4.52 eV.</li>
+  <li><strong>Try UCCSD ansatz</strong> instead of EfficientSU2. UCCSD is chemistry-aware (operators that respect electronic structure) and gives sub-millihartree accuracy — at the cost of much slower per-iteration speed.</li>
+</ul>
+
+<h3>If you want to push toward the fusion-wall problem</h3>
+<ul>
+  <li><strong>Open-shell WH (neutral)</strong> — would need spin-adapted ansatz or constrained VQE. ~12-20 qubits. The first "real chemistry" upgrade.</li>
+  <li><strong>Read about embedding methods</strong> — DMET, QM-in-MM. These keep the quantum region small while letting the surrounding tungsten lattice be treated classically.</li>
+  <li><strong>Read the IBM Quantum Chemistry tutorial series</strong> at <code>quantum.cloud.ibm.com/docs/en/tutorials</code> — they have several VQE walkthroughs on increasingly realistic systems.</li>
+</ul>
+
+<h3>If you want to deepen the quantum-computing side</h3>
+<ul>
+  <li><strong>Read Nielsen & Chuang</strong> chapters 1–4 — the canonical introduction to quantum computing math.</li>
+  <li><strong>Try Grover's algorithm and quantum phase estimation</strong> — different quantum algorithms with different structures from VQE.</li>
+  <li><strong>Try error mitigation</strong> on your H<sub>2</sub> notebook on real hardware — see how close you can get to the simulator answer.</li>
+</ul>
+
+<h3>The mental model to walk away with</h3>
+
+<p>Quantum chemistry on quantum computers is a real, evolving discipline. The math is the same Schrödinger equation chemists have been solving for 100 years. The new piece is that for hard problems — heavy elements, strong correlation, large active spaces — quantum hardware offers a fundamentally different scaling than any classical method.</p>
+
+<p>Today (2026) we're in the prototype phase: small molecules, small qubit counts, lots of noise, results that demonstrate the algorithm chain rather than out-compete classical methods. By 2029+ that calculus is expected to change as fault-tolerant hardware comes online. The notebooks you have now are part of that transition — they show you how the pieces fit together, on systems where you can verify everything against exact answers.</p>
+
+<p>When the bigger machines arrive, the recipe stays the same. Only the parameters change.</p>
+
+<div class="footer">
+  <p>Companion to <code>01_hello_quantum.ipynb</code>, <code>02_h2_binding.ipynb</code>, and <code>03_wh_binding.ipynb</code> (in the <code>notebooks/</code> folder of this repo).</p>
+</div>
+
+</div>
+</body>
+</html>

@@ -122,12 +122,15 @@ covered in [`docs/concepts/06-sim-vs-qpu.md`](concepts/06-sim-vs-qpu.md).
 
 ### Q: "Can you do error mitigation?"
 
-**A:** Yes, via `qiskit-ibm-runtime`'s `EstimatorV2.options.resilience_level`.
-Level 1 enables TREX (twirled readout error extinction). Level 2 adds ZNE
-(zero-noise extrapolation). Each level costs more shots. We don't enable
-mitigation in the current POC because the free-tier shot budget is
-already tight; that's a stretch goal once we move to a paid plan or
-larger time grants.
+**A:** Yes — and we did. `qiskit-ibm-runtime`'s `EstimatorV2` exposes ZNE
+(zero-noise extrapolation) plus twirled readout mitigation. The WH⁻
+validation script supports it via `--mitigation zne`, and a real run on
+2026-05-31 (`ibm_marrakesh`) is documented in
+[concept 07](concepts/07-error-mitigation.md): ZNE roughly *halved* the error
+magnitude but *overshot* the variational floor — a methodology data point, not
+a trustworthy chemistry result, exactly as expected at this circuit depth. The
+baseline notebook runs are kept unmitigated on purpose, to show the raw NISQ
+cost. Each mitigation level costs more shots, so deeper tuning fits a paid plan.
 
 ### Q: "Why is the WH⁻ noise worse than H₂?"
 
@@ -185,13 +188,15 @@ folder.
 
 ### Q: "What's the next concrete improvement to this code?"
 
-**A:** Three in order of cost/value (the original "single-point QPU
-validation" item was completed on 2026-05-28 — see the result table in
-the README):
-1. **Error mitigation on the WH⁻ QPU run** — TREX + ZNE via
-   `EstimatorV2.options.resilience_level=2`. Goal: bring the 199.8 mHa
-   noise floor low enough to be smaller than the well depth. Costs more
-   shots, fits a paid plan or a single deliberate Open-tier burn.
+**A:** Earlier items are now done — single-point QPU validation (2026-05-28)
+and a first WH⁻ ZNE run (2026-05-31, see
+[concept 07](concepts/07-error-mitigation.md)). Remaining, in order of
+cost/value:
+1. **Tune the mitigation** — the first ZNE run *overshot* the variational
+   floor at this circuit depth. Gentler noise amplification (PEA), dynamical
+   decoupling, a shallower ansatz (linear entanglement, optimization level 3),
+   or PEC should curb the overshoot. Validate any circuit change on the
+   simulator first (free), then spend one QPU check.
 2. **Larger active space** — CAS(6,6) → ~10 circuit qubits, still
    NISQ-tractable, much better simulator accuracy (~paid tier).
 3. **Larger basis** — def2-SVPD for the H side at least, to fix the
@@ -216,7 +221,8 @@ narrative; MIT licence; all numbers reproducible from the notebooks.
   but didn't sweep ansatz families systematically. A production version
   would benchmark adaptive ansätze (ADAPT-VQE), problem-aware variants
   (k-UpCCGSD), and chemically-motivated reductions before committing.
-- **Error mitigation is mentioned, not deployed.** TREX/ZNE/PEC are
-  described in [concept 6](concepts/06-sim-vs-qpu.md) but the current
-  QPU validation runs are unmitigated. Enabling mitigation is the
-  natural next step on a paid plan.
+- **Error mitigation is deployed, not yet tuned.** A first ZNE run was done
+  (2026-05-31, [concept 07](concepts/07-error-mitigation.md)) and it overshot
+  the variational floor — so the *baseline* result table stays unmitigated,
+  and dialing in reliable mitigation (gentler ZNE/PEA, dynamical decoupling,
+  PEC, a shallower circuit) remains open work.

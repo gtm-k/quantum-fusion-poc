@@ -395,6 +395,9 @@ def run_qpu(mitigation: str = "none") -> None:
         f"wh_qpu_validation{suffix}_"
         f"{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.json"
     )
+    if out_path.exists():
+        # Don't clobber an existing same-date artifact; disambiguate by job id.
+        out_path = out_path.with_name(f"{out_path.stem}_{out.get('job_id', 'rerun')}.json")
     out_path.write_text(json.dumps(out, indent=2))
 
     print(f"\nwrote {out_path}")

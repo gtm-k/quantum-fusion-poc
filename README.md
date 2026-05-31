@@ -1,5 +1,13 @@
 # Quantum Fusion POC — tungsten–hydrogen binding via VQE
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![Qiskit](https://img.shields.io/badge/Qiskit-2.4-6929C4.svg)](https://www.ibm.com/quantum/qiskit)
+[![qiskit-ibm-runtime](https://img.shields.io/badge/qiskit--ibm--runtime-0.47-6929C4.svg)](https://docs.quantum.ibm.com/api/qiskit-ibm-runtime)
+![Status: research prototype](https://img.shields.io/badge/status-research%20prototype-orange.svg)
+
+*An independent research prototype — not affiliated with or endorsed by IBM. Qiskit® and IBM Quantum® are trademarks of IBM.*
+
 A small, honest prototype: compute the binding behaviour of a tungsten–hydrogen
 system on a quantum computer using the Variational Quantum Eigensolver (VQE).
 The fusion-reactor motivation is real; the current quantum hardware can only
@@ -17,9 +25,10 @@ real problem when fault-tolerant hardware arrives (~2029+).
 > `ibm_marrakesh`, H₂ single-point validation on `ibm_marrakesh`, WH⁻
 > single-point validation on `ibm_fez`. Each result is captured in
 > [`results/qpu_runs/`](results/qpu_runs/) with the raw counts /
-> energies, backend, job ID, and shot count. No error mitigation was
-> applied — the noise figures you'll see in the result table are the
-> *unmitigated* hardware cost.
+> energies, backend, job ID, and shot count. The baseline notebook/QPU
+> runs are **unmitigated** — those noise figures are the raw hardware cost.
+> An optional Zero-Noise Extrapolation (ZNE) run on WH⁻ (2026-05-31) is
+> reported in the error-mitigation section below.
 >
 > **What this is not.** A production tungsten-binding calculator. The
 > physical system that matters for fusion reactor walls (a W₈ vacancy
@@ -175,7 +184,7 @@ gate errors + transpilation effects + backend drift, all conflated into
 one number. Disentangling them needs additional calibration circuits,
 which a follow-on phase could add.
 
-### Error mitigation (wired in; result pending a hardware run)
+### Error mitigation (ZNE) — completed 2026-05-31
 
 The WH⁻ validation script now supports **Zero-Noise Extrapolation (ZNE)**
 plus twirled readout mitigation behind a flag. The default still produces

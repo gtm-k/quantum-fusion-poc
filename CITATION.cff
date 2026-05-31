@@ -1,0 +1,24 @@
+# Lets GitHub render a "Cite this repository" button.
+# TODO (maintainer): refine author name / add ORCID before publishing.
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Quantum Fusion POC — tungsten–hydrogen binding via VQE"
+abstract: >-
+  A methodology proof-of-concept computing tungsten–hydrogen binding behaviour
+  with the Variational Quantum Eigensolver (VQE), validated single-point on real
+  IBM Quantum hardware, with an honest account of NISQ-era noise and Zero-Noise
+  Extrapolation (ZNE) error mitigation.
+type: software
+version: "0.1.0"
+date-released: "2026-05-31"
+license: MIT
+repository-code: "https://github.com/gtm-k/quantum-fusion-poc"
+authors:
+  - family-names: "Gowtham"
+keywords:
+  - quantum computing
+  - variational quantum eigensolver
+  - quantum chemistry
+  - error mitigation
+  - fusion materials
+  - tungsten

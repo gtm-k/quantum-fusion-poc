@@ -1,0 +1,34 @@
+{
+  "experiment": "WH- VQE \u2014 QPU single-point validation at simulator-optimal theta*",
+  "loaded_from": "wh_optimal_params.json",
+  "backend": "ibm_marrakesh",
+  "backend_qubits": 156,
+  "job_id": "d8e6ucjo3njc73eub3v0",
+  "shots": 4096,
+  "transpiler_optimization_level": 1,
+  "mitigation": "zne",
+  "mitigation_detail": {
+    "method": "zne",
+    "measure_mitigation": true,
+    "zne_noise_factors": [
+      1,
+      3,
+      5
+    ],
+    "zne_extrapolator": [
+      "exponential",
+      "linear"
+    ],
+    "note": "Zero-Noise Extrapolation via gate folding plus twirled readout mitigation. Suppresses systematic hardware bias by extrapolating from amplified-noise runs; ~3x the QPU executions of an unmitigated run. Does not remove bias entirely."
+  },
+  "E_sim_electronic_ha": -1.975647624152098,
+  "E_sim_total_ha": -67.44320266094398,
+  "E_qpu_electronic_ha": -2.0735747850783675,
+  "E_qpu_total_ha": -67.54112982187024,
+  "delta_E_ha": -0.09792716092626108,
+  "delta_E_mHa": -97.92716092626108,
+  "delta_E_meV": -2664.733799937514,
+  "interpretation": "delta_E AFTER Zero-Noise Extrapolation (+ twirled readout mitigation) on the same 6-qubit, ~30-layer EfficientSU2(reps=4, full) circuit. ZNE estimates and subtracts systematic hardware bias by extrapolating from deliberately noise-amplified runs; the residual delta_E reflects extrapolation error plus un-mitigated shot noise. Compare against the unmitigated baseline (wh_qpu_validation_<date>.json, delta_E ~ +199.8 mHa) to quantify how much mitigation recovers. At this circuit depth ZNE is near the edge of reliability, so treat the mitigated value as a methodology data point, not a chemistry result.",
+  "executed_at_utc": "2026-05-31T17:28:47.222708+00:00",
+  "retention_note": "IBM Open plan typically retains job records for ~30 days."
+}

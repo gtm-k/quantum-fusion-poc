@@ -13,11 +13,15 @@ Usage (from inside WSL Ubuntu):
         results/qpu_runs/wh_optimal_params.json with theta*, Hamiltonian
         Pauli coefficients, and the ansatz/optimizer configuration.
 
-    python scripts/wh_qpu_validation.py qpu
+    python scripts/wh_qpu_validation.py qpu [--mitigation {none,zne}]
         Load theta* and the Hamiltonian from JSON (saves us re-running
         pyscf), reconstruct the ansatz, transpile to the least-busy
         IBM backend, submit a single-point energy evaluation, write
-        results/qpu_runs/wh_qpu_validation_<DATE>.json.
+        results/qpu_runs/wh_qpu_validation[_<mit>]_<DATE>.json.
+        --mitigation zne enables Zero-Noise Extrapolation + readout
+        mitigation (real-hardware only; ~3-5x QPU cost). Default: none,
+        which reproduces the unmitigated baseline result (now also recording
+        a mitigation_detail field noting that no mitigation was applied).
 
 Environment:
     IBM_QUANTUM_TOKEN must be set, OR a saved account must exist at
@@ -50,6 +54,16 @@ ANSATZ_ENTANGLEMENT = "full"
 OPTIMIZER_SEED = 7
 OPTIMIZER_MAXITER = 2000
 OPTIMIZER_RHOBEG = 0.3
+
+QPU_SHOTS = 4096
+# ZNE (Zero-Noise Extrapolation) — applied only when --mitigation zne (qpu mode).
+# noise_factors are the gate-folding amplification levels; the energy is measured
+# at each and extrapolated back to the (unreachable) zero-noise limit.
+ZNE_NOISE_FACTORS = [1, 3, 5]
+# Extrapolators are tried in order: if the exponential fit fails on the
+# heavily-degraded high-noise points (likely at this circuit depth), it falls
+# back to linear rather than erroring out a job whose shots are already spent.
+ZNE_EXTRAPOLATOR = ["exponential", "linear"]
 
 
 def build_hamiltonian():
@@ -203,7 +217,106 @@ def run_sim() -> None:
     print(f"  Cost calls       : {len(history)}")
 
 
-def run_qpu() -> None:
+def _configure_mitigation(estimator, mitigation: str) -> dict:
+    """Apply the requested error mitigation to an EstimatorV2 and return a
+    JSON-serializable record of what was applied (for the run artifact).
+
+    'none' leaves the estimator raw. 'zne' enables Zero-Noise Extrapolation
+    (gate folding: re-run the circuit at each noise factor and extrapolate to
+    the zero-noise limit) plus twirled readout mitigation. ZNE only suppresses
+    *real* hardware noise, so it is a no-op on a noiseless simulator and
+    multiplies QPU cost by roughly the number of noise factors.
+    """
+    if mitigation == "none":
+        return {"method": "none"}
+    if mitigation == "zne":
+        estimator.options.resilience.measure_mitigation = True
+        estimator.options.resilience.zne_mitigation = True
+        estimator.options.resilience.zne.noise_factors = ZNE_NOISE_FACTORS
+        estimator.options.resilience.zne.extrapolator = ZNE_EXTRAPOLATOR
+        return {
+            "method": "zne",
+            "measure_mitigation": True,
+            "zne_noise_factors": list(ZNE_NOISE_FACTORS),
+            "zne_extrapolator": ZNE_EXTRAPOLATOR,
+            "note": (
+                "Zero-Noise Extrapolation via gate folding plus twirled readout "
+                "mitigation. Suppresses systematic hardware bias by extrapolating "
+                f"from amplified-noise runs; ~{len(ZNE_NOISE_FACTORS)}x the QPU "
+                "executions of an unmitigated run. Does not remove bias entirely."
+            ),
+        }
+    raise ValueError(f"unknown mitigation: {mitigation!r}")
+
+
+INTERP_NONE = (
+    "delta_E is the lumped hardware-cost on a 6-qubit, ~30-layer-deep "
+    "EfficientSU2(reps=4, full) circuit: shot noise + readout error + "
+    "compounding gate errors + transpilation effects + backend drift. "
+    "Expected to be substantially larger than the H2 (2-qubit, shallow) "
+    "delta_E. The H2 and WH- jobs landed on different physical backends "
+    "(H2 on ibm_marrakesh, WH- on ibm_fez) but the same Heron r2 "
+    "generation, so the comparison reflects circuit-depth scaling and "
+    "not a same-chip apples-to-apples noise measurement. No mitigation."
+)
+
+INTERP_ZNE = (
+    "delta_E AFTER Zero-Noise Extrapolation (+ twirled readout mitigation) "
+    "on the same 6-qubit, ~30-layer EfficientSU2(reps=4, full) circuit. ZNE "
+    "estimates and subtracts systematic hardware bias by extrapolating from "
+    "deliberately noise-amplified runs; the residual delta_E reflects "
+    "extrapolation error plus un-mitigated shot noise. Compare against the "
+    "unmitigated baseline (wh_qpu_validation_<date>.json, delta_E ~ +199.8 "
+    "mHa) to quantify how much mitigation recovers. At this circuit depth ZNE "
+    "is near the edge of reliability, so treat the mitigated value as a "
+    "methodology data point, not a chemistry result."
+)
+
+
+def _build_qpu_payload(
+    *,
+    params: dict,
+    backend_name: str,
+    backend_qubits: int,
+    job_id: str,
+    mitigation: str,
+    mitigation_detail: dict,
+    e_qpu_electronic: float,
+    e_qpu_total: float,
+    e_sim_total: float,
+    executed_at_iso: str,
+) -> dict:
+    """Assemble the QPU-run result artifact. Pure: no I/O, no network.
+
+    Kept separate from run_qpu so the output schema can be unit-tested
+    offline — a logic bug here would otherwise only surface (expensively)
+    during a live, paid QPU submission.
+    """
+    delta_ha = e_qpu_total - e_sim_total
+    return {
+        "experiment": "WH- VQE — QPU single-point validation at simulator-optimal theta*",
+        "loaded_from": PARAMS_PATH.name,
+        "backend": backend_name,
+        "backend_qubits": backend_qubits,
+        "job_id": job_id,
+        "shots": QPU_SHOTS,
+        "transpiler_optimization_level": 1,
+        "mitigation": mitigation,
+        "mitigation_detail": mitigation_detail,
+        "E_sim_electronic_ha": float(params["final_electronic_energy_ha"]),
+        "E_sim_total_ha": e_sim_total,
+        "E_qpu_electronic_ha": e_qpu_electronic,
+        "E_qpu_total_ha": e_qpu_total,
+        "delta_E_ha": delta_ha,
+        "delta_E_mHa": delta_ha * 1000,
+        "delta_E_meV": delta_ha * HARTREE_TO_EV * 1000,
+        "interpretation": INTERP_NONE if mitigation == "none" else INTERP_ZNE,
+        "executed_at_utc": executed_at_iso,
+        "retention_note": "IBM Open plan typically retains job records for ~30 days.",
+    }
+
+
+def run_qpu(mitigation: str = "none") -> None:
     if not PARAMS_PATH.exists():
         print(f"ERROR: {PARAMS_PATH} not found. Run 'sim' mode first.")
         sys.exit(1)
@@ -246,7 +359,13 @@ def run_qpu() -> None:
     isa_H = qubit_op.apply_layout(isa_ansatz.layout)
 
     estimator = EstimatorV2(mode=backend)
-    estimator.options.default_shots = 4096
+    estimator.options.default_shots = QPU_SHOTS
+    mitigation_detail = _configure_mitigation(estimator, mitigation)
+    if mitigation == "zne":
+        print(f"mitigation: zne  (noise factors {ZNE_NOISE_FACTORS}, "
+              f"extrapolator {ZNE_EXTRAPOLATOR}, ~{len(ZNE_NOISE_FACTORS)}x QPU cost)")
+    else:
+        print("mitigation: none (raw hardware)")
 
     job = estimator.run([(isa_ansatz, isa_H)])
     print(f"job id: {job.job_id()}")
@@ -256,38 +375,26 @@ def run_qpu() -> None:
     E_total_qpu = E_electronic_qpu + float(payload["energy_offset_ha"])
 
     E_total_sim = float(payload["final_total_energy_ha"])
-    delta_ha = E_total_qpu - E_total_sim
 
-    out = {
-        "experiment": "WH- VQE — QPU single-point validation at simulator-optimal theta*",
-        "loaded_from": PARAMS_PATH.name,
-        "backend": backend.name,
-        "backend_qubits": backend.num_qubits,
-        "job_id": job.job_id(),
-        "shots": 4096,
-        "transpiler_optimization_level": 1,
-        "mitigation": "none",
-        "E_sim_electronic_ha": float(payload["final_electronic_energy_ha"]),
-        "E_sim_total_ha": E_total_sim,
-        "E_qpu_electronic_ha": E_electronic_qpu,
-        "E_qpu_total_ha": E_total_qpu,
-        "delta_E_ha": delta_ha,
-        "delta_E_mHa": delta_ha * 1000,
-        "delta_E_meV": delta_ha * HARTREE_TO_EV * 1000,
-        "interpretation": (
-            "delta_E is the lumped hardware-cost on a 6-qubit, ~30-layer-deep "
-            "EfficientSU2(reps=4, full) circuit: shot noise + readout error + "
-            "compounding gate errors + transpilation effects + backend drift. "
-            "Expected to be substantially larger than the H2 (2-qubit, shallow) "
-            "delta_E. The H2 and WH- jobs landed on different physical backends "
-            "(H2 on ibm_marrakesh, WH- on ibm_fez) but the same Heron r2 "
-            "generation, so the comparison reflects circuit-depth scaling and "
-            "not a same-chip apples-to-apples noise measurement. No mitigation."
-        ),
-        "executed_at_utc": datetime.now(timezone.utc).isoformat(),
-        "retention_note": "IBM Open plan typically retains job records for ~30 days.",
-    }
-    out_path = RESULTS_DIR / f"wh_qpu_validation_{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.json"
+    out = _build_qpu_payload(
+        params=payload,
+        backend_name=backend.name,
+        backend_qubits=backend.num_qubits,
+        job_id=job.job_id(),
+        mitigation=mitigation,
+        mitigation_detail=mitigation_detail,
+        e_qpu_electronic=E_electronic_qpu,
+        e_qpu_total=E_total_qpu,
+        e_sim_total=E_total_sim,
+        executed_at_iso=datetime.now(timezone.utc).isoformat(),
+    )
+    delta_ha = out["delta_E_ha"]
+
+    suffix = "" if mitigation == "none" else f"_{mitigation}"
+    out_path = RESULTS_DIR / (
+        f"wh_qpu_validation{suffix}_"
+        f"{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.json"
+    )
     out_path.write_text(json.dumps(out, indent=2))
 
     print(f"\nwrote {out_path}")
@@ -303,11 +410,23 @@ def main() -> None:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("mode", choices=["sim", "qpu"])
+    parser.add_argument(
+        "--mitigation",
+        choices=["none", "zne"],
+        default="none",
+        help=(
+            "QPU error mitigation (qpu mode only). 'none' = raw hardware "
+            "(default; preserves the baseline artifact). 'zne' = Zero-Noise "
+            "Extrapolation + readout mitigation; real-hardware only, ~3-5x QPU cost."
+        ),
+    )
     args = parser.parse_args()
     if args.mode == "sim":
+        if args.mitigation != "none":
+            print("note: --mitigation applies to qpu mode only; ignored for sim.")
         run_sim()
     else:
-        run_qpu()
+        run_qpu(mitigation=args.mitigation)
 
 
 if __name__ == "__main__":

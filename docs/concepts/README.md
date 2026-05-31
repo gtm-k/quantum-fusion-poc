@@ -1,6 +1,6 @@
 # Concept primers
 
-Six short reads, in order. Each one is ~300 words with one anchor diagram
+Seven short reads, in order. Each one is ~300 words with one anchor diagram
 and a "why this matters for our problem" tie-back. Read them straight
 through — they're designed to build on each other.
 
@@ -12,6 +12,7 @@ through — they're designed to build on each other.
 | [4](04-active-spaces.md) | **Active spaces** | Why 6 circuit qubits are enough for WH⁻ and isn't enough for the real fusion problem |
 | [5](05-scaling-roadmap.md) | **Scaling roadmap** | NISQ today → fault-tolerant tomorrow, and what the same code lets you do at each stage |
 | [6](06-sim-vs-qpu.md) | **Simulator vs QPU** | The train-on-sim, validate-on-QPU pattern that makes a real-hardware claim credible |
+| [7](07-error-mitigation.md) | **Error mitigation** | Why more shots can't fix a biased chip, and how ZNE (now wired into the validation script) attacks the bias |
 
 Already comfortable with most of this? Skip straight to the
 [walkthrough](../walkthrough.html) for the end-to-end project narrative,

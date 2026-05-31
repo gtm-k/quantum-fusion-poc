@@ -161,6 +161,11 @@ estimator.options.default_shots = 4096
 That's it. Toggling a number turns mitigation on. The added cost is
 shots, not code complexity.
 
+This repo wires ZNE into the WH⁻ validation directly — run
+`python scripts/wh_qpu_validation.py qpu --mitigation zne`. See
+[07 — Error mitigation](07-error-mitigation.md) for how ZNE attacks
+*bias* (the part more shots can't fix) and what to honestly expect from it.
+
 ## Why it matters for our problem
 
 In `01_hello_quantum.ipynb` we already ran a Bell state on `ibm_marrakesh`

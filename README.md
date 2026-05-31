@@ -175,6 +175,41 @@ gate errors + transpilation effects + backend drift, all conflated into
 one number. Disentangling them needs additional calibration circuits,
 which a follow-on phase could add.
 
+### Error mitigation (wired in; result pending a hardware run)
+
+The WH⁻ validation script now supports **Zero-Noise Extrapolation (ZNE)**
+plus twirled readout mitigation behind a flag. The default still produces
+the unmitigated baseline result (its only schema change is an added
+`mitigation_detail` field recording that no mitigation was applied):
+
+```bash
+python scripts/wh_qpu_validation.py qpu --mitigation zne
+```
+
+This writes a *separate* artifact (`wh_qpu_validation_zne_<DATE>.json`) so
+the baseline above stays intact, and records the full ZNE configuration
+(noise factors `[1, 3, 5]`, exponential→linear fallback extrapolator) for
+reproducibility.
+ZNE targets the **systematic bias** that more shots cannot reduce; the
+mechanism, the variance-vs-bias reasoning, and honest expectations are
+documented in [`docs/concepts/07-error-mitigation.md`](docs/concepts/07-error-mitigation.md).
+
+> **Result (2026-05-31, `ibm_marrakesh`, job `d8e6ucjo3njc73eub3v0`):** ZNE
+> moved ΔE vs the simulator from the unmitigated **+199.8 mHa** to
+> **−97.9 mHa**. The error *magnitude* roughly halved (≈2×) and is now under
+> the ~110 mHa well depth — **but the sign flipped and the mitigated energy
+> (−67.5411 Ha) sits ~87 mHa _below_ the exact CASCI ground state
+> (−67.4545 Ha), a variational violation.** ZNE over-extrapolated at this
+> circuit depth: it traded a +200 mHa bias for an ~−87 mHa overshoot past the
+> physical floor. This is precisely the "edge of reliability" outcome flagged
+> below — a real magnitude improvement, but **still a methodology data point,
+> not a trustworthy chemistry result.** Full record:
+> [`wh_qpu_validation_zne_2026-05-31.json`](results/qpu_runs/wh_qpu_validation_zne_2026-05-31.json).
+>
+> Method note: implemented and verified against `qiskit-ibm-runtime` 0.47.0;
+> a single ZNE point carries its own variance, so the overshoot is indicative,
+> not a precise bias measurement.
+
 ## Result snapshot
 
 | Quantity | Value | Reference / caveat |

@@ -1,5 +1,4 @@
 # Lets GitHub render a "Cite this repository" button.
-# TODO (maintainer): refine author name / add ORCID before publishing.
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: "Quantum Fusion POC — tungsten–hydrogen binding via VQE"
@@ -14,7 +13,7 @@ date-released: "2026-05-31"
 license: MIT
 repository-code: "https://github.com/gtm-k/quantum-fusion-poc"
 authors:
-  - family-names: "Gowtham"
+  - name: "Gowtham"
 keywords:
   - quantum computing
   - variational quantum eigensolver

@@ -38,6 +38,9 @@ real problem when fault-tolerant hardware arrives (~2029+).
 >
 > The numbers in this repo are deliberately scoped to be reproducible
 > on the IBM Open plan (free tier).
+>
+> **➡️ Want the honest one-page takeaway?** See
+> [**Findings & lessons learned**](docs/FINDINGS.md).
 
 ---
 

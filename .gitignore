@@ -43,3 +43,12 @@ bash.exe.stackdump
 .idea/
 *.swp
 *~
+
+# Impeccable design tooling (local-only; never ship to the public repo)
+.agents/
+.kiro/
+.codex/
+.claude/
+.impeccable/
+PRODUCT.md
+DESIGN.md

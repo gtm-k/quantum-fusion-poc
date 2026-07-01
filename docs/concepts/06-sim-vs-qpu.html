@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<title>Simulator vs QPU — Quantum Fusion POC</title>
+<meta name="description" content="Why nobody runs full VQE on real hardware yet: train on a simulator to find the parameters, then validate one point on the QPU." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/site.css" />
+</head>
+<body>
+<div class="progress" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+      Quantum Fusion POC
+    </a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    <div class="nav-links">
+      <a href="../index.html#story">The story</a>
+      <a href="../index.html#notebooks">Notebooks</a>
+      <a href="index.html">Concepts</a>
+      <a href="../faq.html">FAQ</a>
+      <a class="nav-cta" href="https://github.com/gtm-k/quantum-fusion-poc">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<article class="band band-tight">
+  <div class="wrap read">
+    <p class="kicker">Concept 6 of 7 · The real-world pattern</p>
+    <h1>Simulator vs QPU</h1>
+    <p class="serif-quote">Nobody runs full VQE on a real QPU today. The pattern is <em>train on a simulator, validate on the QPU</em> &mdash; find the optimal parameters classically, then evaluate the final energy once on real hardware to see how much noise costs you.</p>
+
+    <figure class="figure diagram-frame reveal">
+      <svg viewBox="0 0 620 300" role="img" aria-label="Two-phase pattern: Phase 1 trains a full VQE on a simulator to find the optimal parameters theta-star; Phase 2 validates that single parameter point on a real QPU, and the energy gap delta-E is the lumped cost of hardware noise.">
+        <!-- Phase 1: simulator (teal) -->
+        <rect x="14" y="22" width="270" height="256" rx="10" fill="#eef4f2" stroke="#45a08e" stroke-width="1.5"/>
+        <text x="149" y="46" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-weight="600" font-size="12.5" fill="#2f7a68">Phase 1 · Train on a simulator</text>
+        <text x="149" y="64" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#6c6a64">Aer simulator · your laptop</text>
+        <rect x="34" y="80" width="230" height="112" rx="6" fill="#faf9f5" stroke="#45a08e" stroke-width="1"/>
+        <text x="149" y="102" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-weight="500" font-size="11" fill="#141413">Full VQE loop</text>
+        <text x="149" y="122" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#3d3d3a">~500–2000 cost evals</text>
+        <text x="149" y="140" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#3d3d3a">classical optimizer iterates</text>
+        <text x="149" y="159" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10.5" fill="#141413">converges to <tspan font-family="Cormorant Garamond, serif" font-style="italic" font-size="13" fill="#2f7a68">θ*</tspan></text>
+        <text x="149" y="180" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-style="italic" font-size="9.5" fill="#2f7a68">duration: minutes</text>
+        <text x="149" y="214" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#6c6a64">Outputs</text>
+        <text x="149" y="234" text-anchor="middle" font-family="Cormorant Garamond, serif" font-style="italic" font-size="14" fill="#141413">θ*  ·  E<tspan baseline-shift="sub" font-size="9">sim</tspan>(θ*)</text>
+
+        <!-- hand-off arrow -->
+        <line x1="286" y1="136" x2="334" y2="136" stroke="#6c6a64" stroke-width="2" marker-end="url(#qpuArrow)"/>
+        <text x="310" y="125" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="#6c6a64">hand off <tspan font-family="Cormorant Garamond, serif" font-style="italic" font-size="12" fill="#141413">θ*</tspan></text>
+
+        <!-- Phase 2: QPU (coral) -->
+        <rect x="336" y="22" width="270" height="256" rx="10" fill="#f7efe9" stroke="#cc785c" stroke-width="1.5"/>
+        <text x="471" y="46" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-weight="600" font-size="12.5" fill="#b0583b">Phase 2 · Validate on a QPU</text>
+        <text x="471" y="64" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#6c6a64">ibm_marrakesh · cloud</text>
+        <rect x="356" y="80" width="230" height="112" rx="6" fill="#faf9f5" stroke="#cc785c" stroke-width="1"/>
+        <text x="471" y="102" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-weight="500" font-size="11" fill="#141413">One parameter point <tspan font-family="Cormorant Garamond, serif" font-style="italic" font-size="13" fill="#b0583b">θ*</tspan></text>
+        <text x="471" y="123" text-anchor="middle" font-family="Cormorant Garamond, serif" font-style="italic" font-size="13" fill="#141413">prepare |ψ(θ*)⟩ on the chip</text>
+        <text x="471" y="141" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#3d3d3a">many shots · batched Paulis</text>
+        <text x="471" y="161" text-anchor="middle" font-family="Cormorant Garamond, serif" font-style="italic" font-size="13" fill="#141413">→ E<tspan baseline-shift="sub" font-size="9">qpu</tspan>(θ*)</text>
+        <text x="471" y="181" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-style="italic" font-size="9.5" fill="#b0583b">duration: seconds–minutes</text>
+        <text x="471" y="214" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#6c6a64">Result</text>
+        <text x="471" y="234" text-anchor="middle" font-family="Cormorant Garamond, serif" font-style="italic" font-size="14" fill="#141413">ΔE = E<tspan baseline-shift="sub" font-size="9">qpu</tspan> − E<tspan baseline-shift="sub" font-size="9">sim</tspan></text>
+        <text x="471" y="252" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#b0583b">= lumped hardware cost</text>
+
+        <defs><marker id="qpuArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6c6a64"/></marker></defs>
+      </svg>
+      <figcaption>Train on the simulator to find <span class="mono">θ*</span>, then spend a single QPU job validating that one point. The gap <span class="mono">ΔE</span> is the lumped cost of real hardware.</figcaption>
+    </figure>
+
+    <h2>What it actually means</h2>
+    <p>Running a full VQE on a real QPU today is almost always a bad idea. Here&rsquo;s the math:</p>
+    <ul style="line-height:1.7; padding-left:1.2rem;">
+      <li>A 6-qubit VQE with 60 parameters and a reasonable optimizer needs ~2000 cost-function evaluations to converge.</li>
+      <li>Each evaluation on a real QPU is ~10 seconds (queue + transpile + run + measurement).</li>
+      <li>Total: <strong>~5.5 hours</strong> of QPU time per VQE run.</li>
+      <li>IBM Open plan free tier: <strong>10 minutes per month</strong>.</li>
+    </ul>
+    <p>You can do the arithmetic. Even with paid access this is a poor use of expensive hardware. And worse, the optimizer can be confused by shot noise &mdash; making it slow to converge or settle at a wrong answer.</p>
+    <p>The pragmatic pattern that the field has converged on:</p>
+    <ol style="line-height:1.7; padding-left:1.2rem;">
+      <li><strong>Train on the simulator.</strong> Aer gives noiseless, fast cost evaluations. Run the full VQE loop, get the optimal parameters <span class="mono">θ*</span>.</li>
+      <li><strong>Submit a single QPU job at <span class="mono">θ = θ*</span>.</strong> &ldquo;Single&rdquo; here means <em>one parameter configuration</em>, not one measurement shot &mdash; the energy estimate at <span class="mono">θ*</span> is built from many shots (typically thousands per Pauli term, batched). You get back <span class="mono">E_qpu(θ*)</span>.</li>
+      <li><strong>Compare to <span class="mono">E_sim(θ*)</span>.</strong> The gap <span class="mono">ΔE = E_qpu(θ*) − E_sim(θ*)</span> is the <em>total</em> impact of running on noisy hardware at that parameter setting. That <span class="mono">ΔE</span> is itself a composite &mdash; it includes shot noise (statistical), readout error (qubit-flip on measurement), gate errors (compounded across the circuit depth), transpilation effects (gate mapping changes the noise profile), and any backend drift between calibration and execution. Pulling those apart requires extra runs (calibration circuits, repeated submissions); the headline <span class="mono">ΔE</span> is just the lumped sum.</li>
+    </ol>
+    <p>This gives you a credible &ldquo;ran on real hardware&rdquo; claim <em>and</em> a meaningful result, without burning QPU minutes on optimizer iterations that the classical simulator can do for free.</p>
+
+    <h3>What about error mitigation?</h3>
+    <p>Even a single-shot measurement on a noisy chip gives a biased energy. <strong>Error mitigation</strong> is a family of techniques to reduce that bias without needing full error correction. The main ones:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Technique</th><th>How it reduces bias</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="mono">TREX</span></td>
+            <td>Twirled Readout Error eXtinction &mdash; corrects measurement errors by deliberately scrambling and unscrambling readouts.</td>
+          </tr>
+          <tr>
+            <td><span class="mono">ZNE</span></td>
+            <td>Zero-Noise Extrapolation &mdash; runs the circuit at deliberately <em>increased</em> noise levels, then extrapolates back to zero noise.</td>
+          </tr>
+          <tr>
+            <td><span class="mono">M3</span></td>
+            <td>Matrix-free Measurement Mitigation &mdash; fixes readout errors using a calibration matrix.</td>
+          </tr>
+          <tr>
+            <td><span class="mono">PEC</span></td>
+            <td>Probabilistic Error Cancellation &mdash; the most powerful and most expensive: samples from a quasi-probability distribution that exactly cancels noise on average.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Each technique trades extra QPU shots for less biased energies. For demonstrations a 2&ndash;5&times; overhead from ZNE is reasonable. The Open plan free tier doesn&rsquo;t really give you room for this; a paid plan does.</p>
+    <p><code>qiskit-ibm-runtime</code>&rsquo;s <code>EstimatorV2</code> exposes mitigation via <code>options</code>:</p>
+    <pre><code><span class="tok-k">from</span> qiskit_ibm_runtime <span class="tok-k">import</span> EstimatorV2
+
+estimator = EstimatorV2(mode=backend)
+estimator.options.resilience_level = 2   <span class="tok-c"># adds TREX + ZNE</span>
+estimator.options.default_shots = 4096</code></pre>
+    <p>That&rsquo;s it. Toggling a number turns mitigation on. The added cost is shots, not code complexity.</p>
+    <div class="note key">
+      <span class="note-label">In this repo</span>
+      <p>The WH<sup>&minus;</sup> validation wires ZNE in directly &mdash; run <code>python scripts/wh_qpu_validation.py qpu --mitigation zne</code>. See <a href="07-error-mitigation.html">Concept 7 &mdash; Error mitigation</a> for how ZNE attacks <em>bias</em> (the part more shots can&rsquo;t fix) and what to realistically expect from it.</p>
+    </div>
+
+    <h2>Why it matters for our problem</h2>
+    <p>In <code>01_hello_quantum.ipynb</code> we already ran a Bell state on <code>ibm_marrakesh</code> and saw the noise signature (2.7% of shots came out wrong). That&rsquo;s <em>measurement</em> noise on a 1-layer circuit.</p>
+    <p><code>02_h2_binding.ipynb</code> and <code>03_wh_binding.ipynb</code> both follow the train-then-validate pattern, and both validations were run on real IBM Quantum hardware on 2026-05-28 (<code>ibm_marrakesh</code> for H<sub>2</sub>, <code>ibm_fez</code> for WH<sup>&minus;</sup>; details in the README).</p>
+    <div class="note caution">
+      <span class="note-label">Read this caveat first</span>
+      <p>The unmitigated WH<sup>&minus;</sup> hardware noise <em>exceeded</em> the well depth the simulator computed. The bare QPU energy at <span class="mono">θ*</span> sits well above the dissociation asymptote, which means it is physically uninformative as a binding-energy estimate. The WH<sup>&minus;</sup> run&rsquo;s <em>value</em> is as a noise-scaling data point on a real chemistry circuit, not as a chemistry result.</p>
+    </div>
+    <p>With that frame: the two <span class="mono">ΔE</span> values quantified the lesson this primer predicted &mdash; noise at the WH<sup>&minus;</sup> circuit depth (EfficientSU2 reps=4 with full entanglement, ≈ 30-layer circuit, ~100 two-qubit gates after transpilation) is <strong>~6.5&times; larger</strong> than at H<sub>2</sub>&rsquo;s shallower depth on the same generation of hardware. That is the expected NISQ-era lesson, and it&rsquo;s why mitigation (and ultimately fault tolerance) matter at this scale.</p>
+    <div class="grid cols-3 reveal-stagger" style="margin-top:24px;">
+      <div class="stat">
+        <div class="num" data-count="2.7" data-decimals="1" data-suffix="%" data-count-display="2.7%">0%</div>
+        <div class="label">of Bell-state shots came out wrong (1-layer circuit)</div>
+      </div>
+      <div class="stat">
+        <div class="num" data-count="100" data-prefix="~" data-count-display="~100">0</div>
+        <div class="label">two-qubit gates in the WH<sup>&minus;</sup> circuit after transpilation</div>
+      </div>
+      <div class="stat">
+        <div class="num coral" data-count="6.5" data-decimals="1" data-suffix="×" data-count-display="6.5×">0</div>
+        <div class="label">more hardware noise at WH<sup>&minus;</sup> depth than at H<sub>2</sub> (same hardware generation)</div>
+      </div>
+    </div>
+    <p style="margin-top:28px;">When fault-tolerant hardware arrives, this two-phase pattern collapses into a single phase: full VQE (or its FT-era successor QPE) runs on the QPU end-to-end, and classical simulators become development tools, not runtime participants.</p>
+
+    <nav class="pager">
+      <a href="05-scaling-roadmap.html"><span class="dir">← Previous</span><span class="ttl">Scaling roadmap</span></a>
+      <a class="next" href="07-error-mitigation.html"><span class="dir">Next →</span><span class="ttl">Error mitigation</span></a>
+    </nav>
+  </div>
+</article>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color:#cc785c;"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+          Quantum Fusion POC
+        </a>
+        <p style="margin-top:14px; max-width:34ch;">Seven short primers, in order. Each builds on the last.</p>
+      </div>
+      <div>
+        <p class="foot-h">Concepts</p>
+        <ul>
+          <li><a href="01-qubits-and-superposition.html">1 · Qubits</a></li>
+          <li><a href="02-hamiltonians.html">2 · Hamiltonians</a></li>
+          <li><a href="03-vqe-loop.html">3 · The VQE loop</a></li>
+          <li><a href="04-active-spaces.html">4 · Active spaces</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-h">&nbsp;</p>
+        <ul>
+          <li><a href="05-scaling-roadmap.html">5 · Scaling roadmap</a></li>
+          <li><a href="06-sim-vs-qpu.html">6 · Simulator vs QPU</a></li>
+          <li><a href="07-error-mitigation.html">7 · Error mitigation</a></li>
+          <li><a href="../index.html">← Back to the story</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine">An independent research prototype &mdash; not affiliated with or endorsed by IBM. Qiskit&reg; and IBM&nbsp;Quantum&reg; are trademarks of IBM. MIT licensed.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="../assets/site.js" defer></script>
+</body>
+</html>

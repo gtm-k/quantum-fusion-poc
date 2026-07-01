@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<title>FAQ — Quantum Fusion POC</title>
+<meta name="description" content="Answers to the questions this VQE-on-real-hardware tungsten-chemistry proof-of-concept tends to provoke: quantum advantage, real QPU runs, error mitigation, accuracy, and the fusion connection." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/site.css" />
+</head>
+<body>
+<!-- impeccable-disable numbered-section-markers -- the "01/02/03" tokens are notebook filenames (01_hello_quantum.ipynb) and concept file paths (concepts/05-...), not decorative section markers -->
+
+<div class="progress" aria-hidden="true"></div>
+
+<!-- ============ NAV ============ -->
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+      Quantum Fusion POC
+    </a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    <div class="nav-links">
+      <a href="index.html#story">The story</a>
+      <a href="index.html#notebooks">Notebooks</a>
+      <a href="index.html#verdict">Verdict</a>
+      <a href="concepts/">Concepts</a>
+      <a href="faq.html">FAQ</a>
+      <a class="nav-cta" href="https://github.com/gtm-k/quantum-fusion-poc">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HEADER ============ -->
+<header class="band band-tight">
+  <div class="wrap read">
+    <h1>Frequently asked questions</h1>
+    <p class="lead">Quick answers to the questions this POC tends to provoke. Skim it for the parts that interest you; nothing builds on anything else.</p>
+    <p>If a question you have isn&rsquo;t covered, the <a href="index.html">full story</a> or the <a href="concepts/">concept primers</a> are likely the right next read.</p>
+  </div>
+</header>
+
+<!-- ============ FAQ ============ -->
+<section class="band-tight" style="padding-top:0;">
+  <div class="wrap read">
+
+    <!-- ---- Scope and framing ---- -->
+    <h2>Scope and framing</h2>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;Did this beat classical methods?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>No, and it shouldn&rsquo;t be expected to. The active space we use &mdash; CAS(4,&nbsp;4) &mdash; is small enough that classical CASCI computes the <em>exact</em> ground state in milliseconds. This POC isn&rsquo;t a quantum-advantage demonstration; it&rsquo;s a workflow demonstration on the smallest meaningful instance. <strong>Quantum advantage for chemistry is a 2029+ fault-tolerant story</strong> &mdash; see <a href="concepts/05-scaling-roadmap.html">the scaling-roadmap primer</a>.</p>
+      </div></div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;What&rsquo;s the practical benefit today?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>Methodology readiness. The same code in <code>03_wh_binding.ipynb</code> scales &mdash; by changing parameters, not architecture &mdash; to the active spaces that fault-tolerant hardware will unlock. Whoever picks up this repo in 2029 with 200 logical qubits can swap the geometry, basis, active space, and backend without rewriting the pipeline.</p>
+      </div></div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;Why these specific molecules?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>Three notebooks form a learning ladder.</p>
+        <ul>
+          <li><code>01_hello_quantum.ipynb</code> &mdash; Bell state. Smallest non-trivial quantum circuit. Validates the toolchain.</li>
+          <li><code>02_h2_binding.ipynb</code> &mdash; H<sub>2</sub> at the STO-3G level. Smallest non-trivial quantum <em>chemistry</em> problem. Has a known exact answer (FCI) to compare against.</li>
+          <li><code>03_wh_binding.ipynb</code> &mdash; WH<sup>&minus;</sup> via pyscf. The smallest tungsten-hydrogen system that fits a 6-qubit budget while still containing real transition-metal correlation physics.</li>
+        </ul>
+      </div></div>
+    </div>
+
+    <!-- ---- Methodology ---- -->
+    <h2 style="margin-top:3rem;">Methodology</h2>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;How is this different from a regular pyscf calculation?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>pyscf does the <em>classical</em> part &mdash; Hartree-Fock reference, integral generation, FCIDump export. VQE then finds the correlated ground state by optimizing a quantum circuit. At this size pyscf could do the whole calculation classically (it&rsquo;s CASCI at CAS(4,4)) &mdash; the point is that the scaffold extends to active spaces pyscf can&rsquo;t handle on its own.</p>
+      </div></div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;Why WH<sup>&minus;</sup> instead of neutral WH?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>WH<sup>&minus;</sup> is a closed-shell singlet (16 valence electrons, all paired) &mdash; qiskit-nature&rsquo;s <code>ActiveSpaceTransformer</code> handles it cleanly. Neutral WH is a <sup>6</sup>&Sigma;<sup>+</sup> sextet (5 unpaired electrons), which <code>ActiveSpaceTransformer</code> in qiskit-nature 0.7 can&rsquo;t slice properly. WH<sup>&minus;</sup> keeps the W&ndash;H &sigma;-bond physics while fitting the qubit budget. <strong>Important caveat:</strong> the &ldquo;well depth&rdquo; we compute is for WH<sup>&minus;</sup>, not the experimental binding energy of WH &mdash; those are different quantities. The 3.11 eV number landing close to literature WH values is coincidental error cancellation, not validation. We document this explicitly in the notebook.</p>
+      </div></div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;Why this ansatz (EfficientSU2) rather than UCCSD?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>UCCSD is chemistry-aware and would give higher accuracy. But at 6 qubits with our integrals it takes ~24 minutes per cost-function call &mdash; that&rsquo;s days for a full VQE convergence. EfficientSU2 is hardware-efficient: shallow, fast, robust. It gets us to ~11 mHa accuracy in minutes. For a methodology demonstration that&rsquo;s the right tradeoff. For production work, UCCSD or its successors.</p>
+      </div></div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;How accurate is the result?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>For H<sub>2</sub>: ~2.45 nanohartree from the FCI reference &mdash; essentially exact within the chosen basis. For WH<sup>&minus;</sup>: 11.3 mHa from the CASCI reference, which is roughly 300 meV or 7 kcal/mol. <strong>That is well above chemical accuracy (1 kcal/mol).</strong> This is demonstration-grade, not production-grade. The error budget would shrink with UCCSD or deeper EfficientSU2 &mdash; and could be driven to whatever precision you like with QPE on fault-tolerant hardware, <em>within the chosen basis and active space</em> (the basis-set and active-space limitations remain).</p>
+      </div></div>
+    </div>
+
+    <!-- ---- Hardware ---- -->
+    <h2 style="margin-top:3rem;">Hardware</h2>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;Did you actually run any of this on a real quantum computer?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>Yes &mdash; all three notebooks have been executed on real IBM Quantum hardware end-to-end as of 2026-05-28.</p>
+        <ul>
+          <li><strong>Bell state</strong> (<code>01_hello_quantum.ipynb</code>): submitted to <code>ibm_marrakesh</code> on 2026-05-27. Counts showed the expected entanglement signature (~50% <code>00</code>, ~50% <code>11</code>) plus a ~2.7% error from spurious <code>01</code>/<code>10</code> outcomes that violate perfect correlation. Job ID <code>d8bccr4e6kns73aasfi0</code>. Full record in <a href="https://github.com/gtm-k/quantum-fusion-poc/blob/master/results/qpu_runs/bell_marrakesh_2026-05-27.json"><code>results/qpu_runs/bell_marrakesh_2026-05-27.json</code> ↗</a>.</li>
+          <li><strong>H<sub>2</sub> single-point</strong> (at simulator-optimal &theta;*): submitted to <code>ibm_marrakesh</code> on 2026-05-28. &Delta;E = E<sub>qpu</sub> &minus; E<sub>sim</sub> &approx; +30.6 mHa = +834 meV (no mitigation). Job ID <code>d8cd09j8amns73bjcan0</code>.</li>
+          <li><strong>WH<sup>&minus;</sup> single-point</strong> (at simulator-optimal &theta;*): submitted to <code>ibm_fez</code> on 2026-05-28. &Delta;E &approx; +199.8 mHa = +5,438 meV (no mitigation). <strong>Important read:</strong> this &Delta;E <em>exceeds</em> the ~110 mHa well depth the simulator computed, which means the unmitigated QPU energy at &theta;* sits above the dissociation asymptote and is physically uninformative as a binding-energy estimate. The value of this measurement is as a <em>noise-scaling data point</em>, not a chemistry result. Job ID <code>d8cd4hajki0s73ar3jj0</code>.</li>
+        </ul>
+        <p>The two single-point &Delta;E values together quantify how noise scales with circuit depth on this generation of hardware &mdash; see the README&rsquo;s &ldquo;H<sub>2</sub> and WH<sup>&minus;</sup> single-point QPU validation&rdquo; section.</p>
+      </div></div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;Why don&rsquo;t you run full VQE on a real QPU?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>Math: a 6-qubit VQE with ~60 parameters takes ~2000 cost-function evaluations to converge. At ~10 sec per QPU call, that&rsquo;s 5.5 hours of hardware time. IBM Open plan gives 10 minutes per month. The pattern that <em>does</em> fit &mdash; train on simulator, validate single-point on QPU &mdash; is covered in <a href="concepts/06-sim-vs-qpu.html">the simulator-vs-QPU primer</a>.</p>
+      </div></div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;Can you do error mitigation?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>Yes &mdash; and we did. <code>qiskit-ibm-runtime</code>&rsquo;s <code>EstimatorV2</code> exposes ZNE (zero-noise extrapolation) plus twirled readout mitigation. The WH<sup>&minus;</sup> validation script supports it via <code>--mitigation zne</code>, and a real run on 2026-05-31 (<code>ibm_marrakesh</code>) is documented in <a href="concepts/07-error-mitigation.html">the error-mitigation primer</a>: ZNE roughly <em>halved</em> the error magnitude but <em>overshot</em> the variational floor &mdash; a methodology data point, not a trustworthy chemistry result, exactly as expected at this circuit depth. The baseline notebook runs are kept unmitigated on purpose, to show the raw NISQ cost. Each mitigation level costs more shots, so deeper tuning fits a paid plan.</p>
+      </div></div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;Why is the WH<sup>&minus;</sup> noise worse than H<sub>2</sub>?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>Circuit depth. EfficientSU2(reps=4, full entanglement) on 6 qubits gives a circuit ~30 layers deep with on the order of 100 two-qubit gates after transpilation. Every two-qubit gate has ~0.5% error and they compound. H<sub>2</sub>&rsquo;s EfficientSU2(reps=2, linear) on 2 qubits is dramatically shallower &mdash; only a handful of two-qubit gates &mdash; so the noise budget is much smaller. The measured &Delta;E ratio (199.8 / 30.6 &approx; 6.5&times;) is the empirical version of this scaling. Fault tolerance is what removes this entirely.</p>
+      </div></div>
+    </div>
+
+    <!-- ---- Fusion context ---- -->
+    <h2 style="margin-top:3rem;">Fusion context</h2>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;How does this connect to fusion reactors?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>Tritium retention in tungsten plasma-facing walls is a quantitative problem: predicting binding energies of hydrogen isotopes in defective tungsten lattices requires accurate electronic structure for transition metal systems. Classical methods struggle (DFT functionals disagree with experiment by 30+% on these systems; coupled cluster doesn&rsquo;t scale to defect-cluster geometries). It&rsquo;s one of the canonical &ldquo;useful chemistry that quantum computers should eventually be able to do.&rdquo;</p>
+      </div></div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;So when will this matter for real fusion design?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>When fault-tolerant quantum hardware exists at the ~200 logical qubit scale. That&rsquo;s plausibly 2029+ for first useful demonstrations, mid-2030s for routine production use. The roadmap details are in <a href="concepts/05-scaling-roadmap.html">the scaling-roadmap primer</a>. This POC is the workflow scaffold for that future.</p>
+      </div></div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;Isn&rsquo;t ITER already operational with DFT-level binding predictions?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>Yes &mdash; and the disagreement between predicted and measured tritium retention is a known source of operational uncertainty. Better electronic-structure methods would reduce uncertainty in tritium inventory projections, which matters for safety case modelling, fuel cycle design, and regulatory approval. Improving the precision is the value proposition, not enabling something that&rsquo;s currently impossible.</p>
+      </div></div>
+    </div>
+
+    <!-- ---- Repo and methodology meta ---- -->
+    <h2 style="margin-top:3rem;">Repo and methodology meta</h2>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;Why two requirements files?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>pyscf has no Windows wheels and its source build fails on Windows out of the box. Notebook 03 needs pyscf; notebooks 01 and 02 don&rsquo;t. So notebook 03 runs in a WSL2 Ubuntu venv while 01 and 02 run in a Windows venv. The launcher (<code>setup/start-wh-jupyter.cmd</code>) bridges the two by starting Jupyter inside WSL while pointing at the Windows-side notebook folder.</p>
+      </div></div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;What&rsquo;s the next concrete improvement to this code?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>Earlier items are now done &mdash; single-point QPU validation (2026-05-28) and a first WH<sup>&minus;</sup> ZNE run (2026-05-31, see <a href="concepts/07-error-mitigation.html">the error-mitigation primer</a>). Remaining, in order of cost/value:</p>
+        <ol>
+          <li><strong>Tune the mitigation</strong> &mdash; the first ZNE run <em>overshot</em> the variational floor at this circuit depth. Gentler noise amplification (PEA), dynamical decoupling, a shallower ansatz (linear entanglement, optimization level 3), or PEC should curb the overshoot. Validate any circuit change on the simulator first (free), then spend one QPU check.</li>
+          <li><strong>Larger active space</strong> &mdash; CAS(6,6) &rarr; ~10 circuit qubits, still NISQ-tractable, much better simulator accuracy (~paid tier).</li>
+          <li><strong>Larger basis</strong> &mdash; def2-SVPD for the H side at least, to fix the well-depth basis-imbalance issue (~mostly classical cost, not QPU).</li>
+        </ol>
+      </div></div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;Is this safe to share publicly?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>The repo is built private-first so we can audit it before flipping to public. Specifically we&rsquo;ve checked: no leaked API tokens (env-var pattern, never in code); no proprietary data; no overclaiming in any narrative; MIT licence; all numbers reproducible from the notebooks.</p>
+      </div></div>
+    </div>
+
+    <div class="acc-item">
+      <button class="acc-q">&ldquo;What does this POC deliberately not address?&rdquo;</button>
+      <div class="acc-a"><div class="acc-a-inner">
+        <p>Three substantive gaps a reader should know about:</p>
+        <ul>
+          <li><strong>The variational principle is taken as given.</strong> We use &lang;&psi;|Ĥ|&psi;&rang; &ge; E<sub>ground</sub> as the foundation of VQE without deriving it. Readers wanting the proof should consult a quantum-mechanics textbook (Sakurai, Griffiths) &mdash; it&rsquo;s one page of linear algebra.</li>
+          <li><strong>Ansatz selection trade-offs are decided, not analysed.</strong> We chose EfficientSU2 over UCCSD for cost reasons (see &ldquo;Why this ansatz&rdquo; above) but didn&rsquo;t sweep ansatz families systematically. A production version would benchmark adaptive ans&auml;tze (ADAPT-VQE), problem-aware variants (k-UpCCGSD), and chemically-motivated reductions before committing.</li>
+          <li><strong>Error mitigation is deployed, not yet tuned.</strong> A first ZNE run was done (2026-05-31, <a href="concepts/07-error-mitigation.html">the error-mitigation primer</a>) and it overshot the variational floor &mdash; so the <em>baseline</em> result table stays unmitigated, and dialing in reliable mitigation (gentler ZNE/PEA, dynamical decoupling, PEC, a shallower circuit) remains open work.</li>
+        </ul>
+      </div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="index.html">
+          <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color:#cc785c;"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+          Quantum Fusion POC
+        </a>
+        <p style="margin-top:14px; max-width:34ch;">A methodology proof for the fault-tolerant era: the full quantum-chemistry pipeline on real tungsten chemistry, on real IBM&nbsp;Quantum hardware.</p>
+      </div>
+      <div>
+        <p class="foot-h">Explore</p>
+        <ul>
+          <li><a href="index.html#story">The story</a></li>
+          <li><a href="index.html#verdict">The verdict</a></li>
+          <li><a href="concepts/">Concepts</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="findings.html">Findings</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-h">Project</p>
+        <ul>
+          <li><a href="https://github.com/gtm-k/quantum-fusion-poc">GitHub repo ↗</a></li>
+          <li><a href="https://github.com/gtm-k/quantum-fusion-poc/blob/master/LICENSE">MIT License ↗</a></li>
+          <li><a href="https://github.com/gtm-k/quantum-fusion-poc/blob/master/CITATION.cff">Citation ↗</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine">An independent research prototype &mdash; not affiliated with or endorsed by IBM. Qiskit&reg; and IBM&nbsp;Quantum&reg; are trademarks of IBM. Numbers are reproducible on the IBM Open plan (free tier). MIT licensed.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="assets/site.js" defer></script>
+</body>
+</html>

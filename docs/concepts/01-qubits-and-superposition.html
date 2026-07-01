@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<title>Qubits and superposition — Quantum Fusion POC</title>
+<meta name="description" content="Why a qubit isn't just a probabilistic bit, and where the exponential power comes from." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/site.css" />
+</head>
+<body>
+<div class="progress" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+      Quantum Fusion POC
+    </a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    <div class="nav-links">
+      <a href="../index.html#story">The story</a>
+      <a href="../index.html#notebooks">Notebooks</a>
+      <a href="index.html">Concepts</a>
+      <a href="../faq.html">FAQ</a>
+      <a class="nav-cta" href="https://github.com/gtm-k/quantum-fusion-poc">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<article class="band band-tight">
+  <div class="wrap read">
+    <p class="kicker">Concept 1 of 7 · The medium</p>
+    <h1>Qubits and superposition</h1>
+    <p class="serif-quote">A classical bit is a switch (on / off). A qubit is an <em>arrow</em> in 3D space that can point anywhere on a sphere &mdash; but when you measure it, you only ever get a single 0 or 1.</p>
+
+    <figure class="figure diagram-frame reveal">
+      <svg viewBox="0 0 360 300" role="img" aria-label="Bloch sphere: a qubit's state is a vector from the centre to any point on the sphere; the poles are basis states |0> and |1>">
+        <ellipse cx="180" cy="150" rx="104" ry="104" fill="none" stroke="#181715" stroke-width="1.4"/>
+        <ellipse cx="180" cy="150" rx="104" ry="30" fill="none" stroke="#c9c3b8" stroke-width="1" stroke-dasharray="3 3"/>
+        <ellipse cx="180" cy="150" rx="30" ry="104" fill="none" stroke="#c9c3b8" stroke-width="1" stroke-dasharray="3 3"/>
+        <line x1="180" y1="42" x2="180" y2="258" stroke="#6c6a64" stroke-width="1"/>
+        <line x1="76" y1="150" x2="284" y2="150" stroke="#6c6a64" stroke-width="1"/>
+        <line class="draw" x1="180" y1="150" x2="242" y2="86" stroke="#cc785c" stroke-width="2.6" marker-end="url(#ba)"/>
+        <circle cx="180" cy="42" r="3.5" fill="#181715"/>
+        <circle cx="180" cy="258" r="3.5" fill="#181715"/>
+        <text x="180" y="32" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="17" font-style="italic" fill="#141413">|0⟩</text>
+        <text x="180" y="278" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="17" font-style="italic" fill="#141413">|1⟩</text>
+        <text x="250" y="80" font-family="Cormorant Garamond, serif" font-size="16" font-style="italic" fill="#b0583b">|ψ⟩</text>
+        <defs><marker id="ba" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#cc785c"/></marker></defs>
+      </svg>
+      <figcaption>The Bloch sphere. Every point on the surface is a valid single-qubit state; the poles are <span class="mono">|0⟩</span> and <span class="mono">|1⟩</span>.</figcaption>
+    </figure>
+
+    <h2>What it actually means</h2>
+    <p>A <strong>classical bit</strong> has exactly two values, 0 or 1, like a light switch. A <strong>qubit</strong> is a vector pointing from the centre of a sphere to some point on its surface. The north pole is <span class="mono">|0⟩</span>, the south pole is <span class="mono">|1⟩</span>, and every other point is a <em class="mono">superposition</em> &mdash; a specific combination of the two, weighted by amounts called <em>amplitudes</em>.</p>
+    <p>The catch: when you <strong>measure</strong> a qubit you don&rsquo;t see the arrow. You see either 0 or 1, with a probability set by how the arrow was oriented. After measurement the arrow snaps to the pole you observed &mdash; the superposition is gone.</p>
+    <p>So why bother? Because <em>before</em> you measure, the qubit can take part in operations that depend on it being in both states at once. With <span class="mono">N</span> qubits you hold a joint state of <span class="mono">2<sup>N</sup></span> amplitudes and manipulate all of them with a single gate. The power isn&rsquo;t &ldquo;trying many things in parallel&rdquo; &mdash; it&rsquo;s setting up <strong>interference</strong> so the right answer reinforces and wrong answers cancel.</p>
+
+    <h2>Why it matters for our problem</h2>
+    <p>A molecule&rsquo;s wavefunction lives in an exponentially large space: for <span class="mono">N</span> electrons over <span class="mono">M</span> orbitals there are <span class="mono">C(M, N)</span> arrangements, and the ground state is a superposition of all of them with specific amplitudes. Classical computers track every amplitude separately; for ~50 electrons that is astronomical.</p>
+    <p>A quantum computer stores the same superposition natively &mdash; one amplitude per basis state, encoded across qubits. In <code>03_wh_binding.ipynb</code>, the WH<sup>&minus;</sup> wavefunction lives in 6 qubits = <span class="mono">2<sup>6</sup></span> = 64 amplitudes. The full fusion problem would need 200+ qubits = <span class="mono">2<sup>200</sup></span> ≈ <span class="mono">10<sup>60</sup></span> amplitudes. No classical computer will ever store that vector; a 200-qubit chip encodes it natively.</p>
+    <div class="note key">
+      <span class="note-label">One nuance to carry forward</span>
+      <p>You can&rsquo;t <em>read out</em> those <span class="mono">10<sup>60</sup></span> amplitudes &mdash; measurement collapses the state to a single classical outcome. The magic isn&rsquo;t random-access storage; it&rsquo;s that gates can shape the amplitudes so the right answer pops out at measurement time. The VQE primer picks this up.</p>
+    </div>
+
+    <nav class="pager">
+      <a href="index.html"><span class="dir">← Index</span><span class="ttl">All seven concepts</span></a>
+      <a class="next" href="02-hamiltonians.html"><span class="dir">Next →</span><span class="ttl">Hamiltonians &amp; ground states</span></a>
+    </nav>
+  </div>
+</article>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color:#cc785c;"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+          Quantum Fusion POC
+        </a>
+        <p style="margin-top:14px; max-width:34ch;">Seven short primers, in order. Each builds on the last.</p>
+      </div>
+      <div>
+        <p class="foot-h">Concepts</p>
+        <ul>
+          <li><a href="01-qubits-and-superposition.html">1 · Qubits</a></li>
+          <li><a href="02-hamiltonians.html">2 · Hamiltonians</a></li>
+          <li><a href="03-vqe-loop.html">3 · The VQE loop</a></li>
+          <li><a href="04-active-spaces.html">4 · Active spaces</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-h">&nbsp;</p>
+        <ul>
+          <li><a href="05-scaling-roadmap.html">5 · Scaling roadmap</a></li>
+          <li><a href="06-sim-vs-qpu.html">6 · Simulator vs QPU</a></li>
+          <li><a href="07-error-mitigation.html">7 · Error mitigation</a></li>
+          <li><a href="../index.html">← Back to the story</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine">An independent research prototype &mdash; not affiliated with or endorsed by IBM. Qiskit&reg; and IBM&nbsp;Quantum&reg; are trademarks of IBM. MIT licensed.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="../assets/site.js" defer></script>
+</body>
+</html>

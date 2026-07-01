@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<title>Scaling roadmap — Quantum Fusion POC</title>
+<meta name="description" content="Today's quantum computers do toy chemistry; the fusion-wall problem needs hardware that doesn't exist yet — but the same code bridges both eras." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/site.css" />
+</head>
+<body>
+<div class="progress" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+      Quantum Fusion POC
+    </a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    <div class="nav-links">
+      <a href="../index.html#story">The story</a>
+      <a href="../index.html#notebooks">Notebooks</a>
+      <a href="index.html">Concepts</a>
+      <a href="../faq.html">FAQ</a>
+      <a class="nav-cta" href="https://github.com/gtm-k/quantum-fusion-poc">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<article class="band band-tight">
+  <div class="wrap read">
+    <p class="kicker">Concept 5 of 7 · Where this scales</p>
+    <h1>Scaling roadmap</h1>
+    <p class="serif-quote">Today&rsquo;s quantum computers can do toy chemistry; the real fusion-wall problem needs hardware that doesn&rsquo;t exist yet &mdash; but is on a credible roadmap. The same code in this repo bridges both eras.</p>
+  </div>
+
+  <div class="wrap">
+    <figure class="figure diagram-frame reveal">
+      <svg viewBox="0 0 480 285" role="img" aria-label="Quantum-hardware scaling roadmap: chemistry milestones plotted by year against qubit count, across the NISQ, early fault-tolerant, and fault-tolerant eras. A projected trajectory rises from a 2-qubit Bell state through this project's 6-qubit WH-minus point to a 200-logical-qubit fusion-materials target around 2029 and beyond.">
+        <!-- era background zones -->
+        <rect x="50" y="20" width="120" height="220" fill="#45a08e" fill-opacity="0.08"/>
+        <rect x="170" y="20" width="100" height="220" fill="#f7efe3"/>
+        <rect x="270" y="20" width="190" height="220" fill="#cc785c" fill-opacity="0.07"/>
+
+        <!-- era separators -->
+        <line x1="170" y1="20" x2="170" y2="240" stroke="#e6dfd8" stroke-width="1" stroke-dasharray="2 3"/>
+        <line x1="270" y1="20" x2="270" y2="240" stroke="#e6dfd8" stroke-width="1" stroke-dasharray="2 3"/>
+
+        <!-- horizontal gridlines at qubit ticks -->
+        <line x1="50" y1="210" x2="460" y2="210" stroke="#e6dfd8" stroke-width="0.8" stroke-dasharray="1 4"/>
+        <line x1="50" y1="170" x2="460" y2="170" stroke="#e6dfd8" stroke-width="0.8" stroke-dasharray="1 4"/>
+        <line x1="50" y1="120" x2="460" y2="120" stroke="#e6dfd8" stroke-width="0.8" stroke-dasharray="1 4"/>
+        <line x1="50" y1="70"  x2="460" y2="70"  stroke="#e6dfd8" stroke-width="0.8" stroke-dasharray="1 4"/>
+        <line x1="50" y1="35"  x2="460" y2="35"  stroke="#e6dfd8" stroke-width="0.8" stroke-dasharray="1 4"/>
+
+        <!-- axes -->
+        <line x1="50" y1="240" x2="460" y2="240" stroke="#141413" stroke-width="1.2"/>
+        <line x1="50" y1="20"  x2="50"  y2="240" stroke="#141413" stroke-width="1.2"/>
+
+        <!-- axis titles -->
+        <text x="18" y="130" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9.5" fill="#141413" transform="rotate(-90 18,130)">qubits — circuit (NISQ) / logical (FT)</text>
+        <text x="255" y="278" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#141413">year</text>
+
+        <!-- zone labels -->
+        <text x="110" y="32" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9.5" font-weight="600" fill="#2f7a68">NISQ era</text>
+        <text x="220" y="32" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9.5" font-weight="600" fill="#9a6412">early FT</text>
+        <text x="365" y="32" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9.5" font-weight="600" fill="#b0583b">fault-tolerant era</text>
+
+        <!-- year tick labels -->
+        <text x="90"  y="253" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#6c6a64">2026</text>
+        <text x="175" y="253" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#6c6a64">2027</text>
+        <text x="260" y="253" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#6c6a64">2029</text>
+        <text x="345" y="253" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#6c6a64">2031</text>
+        <text x="430" y="253" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#6c6a64">2033+</text>
+
+        <!-- qubit tick labels -->
+        <text x="44" y="228" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="9" fill="#6c6a64">2</text>
+        <text x="44" y="213" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="9" fill="#6c6a64">6</text>
+        <text x="44" y="173" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="9" fill="#6c6a64">20</text>
+        <text x="44" y="123" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="9" fill="#6c6a64">50</text>
+        <text x="44" y="73"  text-anchor="end" font-family="JetBrains Mono, monospace" font-size="9" fill="#6c6a64">100</text>
+        <text x="44" y="38"  text-anchor="end" font-family="JetBrains Mono, monospace" font-size="9" fill="#6c6a64">200</text>
+
+        <!-- projected trajectory (dashed = forecast, not measured) -->
+        <path d="M 70 220 Q 130 200 175 170 Q 230 130 285 80 Q 350 45 440 30" fill="none" stroke="#cc785c" stroke-width="2.5" stroke-dasharray="5 3" stroke-linecap="round"/>
+
+        <!-- milestones (each tagged with its qubit unit so they aren't conflated) -->
+        <circle cx="78" cy="228" r="5" fill="#45a08e"/>
+        <text x="78" y="210" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9" fill="#2f7a68">Bell + H₂</text>
+        <text x="78" y="219" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="8" fill="#2f7a68">(circuit)</text>
+
+        <circle cx="110" cy="209" r="5.5" fill="#cc785c"/>
+        <text x="120" y="205" text-anchor="start" font-family="IBM Plex Sans, sans-serif" font-size="9" font-weight="700" fill="#b0583b">THIS POC</text>
+        <text x="120" y="215" text-anchor="start" font-family="IBM Plex Sans, sans-serif" font-size="8" fill="#b0583b">WH⁻ 6q (circuit)</text>
+
+        <circle cx="175" cy="170" r="5" fill="#45a08e"/>
+        <text x="175" y="160" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9" fill="#2f7a68">CAS(10,10) (circuit)</text>
+        <text x="175" y="150" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="8" fill="#2f7a68">larger basis</text>
+
+        <circle cx="240" cy="125" r="5" fill="#9a6412"/>
+        <text x="240" y="115" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9" fill="#9a6412">multi-W cluster (early-FT)</text>
+
+        <circle cx="305" cy="75" r="6.5" fill="#cc785c" stroke="#141413" stroke-width="1"/>
+        <text x="305" y="64" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="9" fill="#b0583b">W₈ vacancy + H (logical)</text>
+        <text x="305" y="54" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="8" font-weight="700" fill="#b0583b">production target</text>
+      </svg>
+      <figcaption>Quantum-hardware scaling, with this repo&rsquo;s milestones marked on it. Each point&rsquo;s colour and its <span class="mono">(circuit)</span> / <span class="mono">(early-FT)</span> / <span class="mono">(logical)</span> tag flag which qubit unit it uses &mdash; those units are not interchangeable (see the note below). The dashed line is a projected trajectory, not measured data.</figcaption>
+    </figure>
+  </div>
+
+  <div class="wrap read">
+    <div class="note key">
+      <span class="note-label">About the y-axis</span>
+      <p>Read this before drawing comparisons. The &ldquo;qubits&rdquo; number means different things at different points on the chart. NISQ-era markers (Bell, H<sub>2</sub>, WH<sup>&minus;</sup> 6q, CAS(10,10) &mdash; tagged <code>(circuit)</code>) are <strong>circuit qubits</strong>: raw qubits on the chip with no error correction. The FT-era marker (W<sub>8</sub> vacancy + H &mdash; tagged <code>(logical)</code>) is <strong>logical qubits</strong>: error-corrected abstractions, each backed by hundreds-to-thousands of physical qubits. The &ldquo;multi-W cluster&rdquo; milestone sits in the transition and is tagged <code>(early-FT)</code> to reflect that ambiguity.</p>
+      <p><strong>These are not the same unit of resource, and the chart cannot be read as &ldquo;200 logical = 33&times; 6 circuit&rdquo;</strong> &mdash; the physical-qubit footprints differ by orders of magnitude. The chart&rsquo;s value is showing milestone <em>order</em> and timing, not a literal resource scaling. See the <a href="https://github.com/gtm-k/quantum-fusion-poc#a-note-on-the-word-qubits">README&rsquo;s qubit-terminology note</a> for the precise definitions.</p>
+    </div>
+
+    <h2>What it actually means</h2>
+    <p>In quantum computing there&rsquo;s a critical distinction between <strong>physical</strong> qubits and <strong>logical</strong> qubits.</p>
+    <ul>
+      <li>A <strong>physical qubit</strong> is the actual transmon (or trapped ion, or whatever) sitting on the chip. They&rsquo;re noisy &mdash; every gate has ~0.1&ndash;1% error, errors compound, and a deep circuit becomes useless.</li>
+      <li>A <strong>logical qubit</strong> is what you get when you combine <em>many</em> physical qubits with error-correcting codes. A logical qubit is essentially error-free for as long as the underlying physical qubits maintain coherence.</li>
+    </ul>
+    <p>Today&rsquo;s biggest IBM Quantum machines (Heron r2 &mdash; <code>ibm_marrakesh</code>, <code>ibm_kingston</code>, <code>ibm_fez</code>) have 156 physical qubits. <strong>Zero logical qubits.</strong> Everything currently running is &ldquo;NISQ&rdquo; &mdash; Noisy Intermediate-Scale Quantum &mdash; which is the polite term for &ldquo;we&rsquo;re getting useful circuits to work despite the noise, but only just.&rdquo;</p>
+    <p>The transition from NISQ to fault tolerance is the next decade&rsquo;s story. Roughly:</p>
+  </div>
+
+  <div class="wrap">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Era</th>
+            <th>Hardware</th>
+            <th>What chemistry can do</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag teal">NISQ</span><br />now &rarr; ~2027</td>
+            <td>~150 noisy physical qubits</td>
+            <td>Toy molecules with active spaces &le; ~10 circuit qubits. Single-point energies on QPU. Full VQE optimization on simulator.</td>
+          </tr>
+          <tr>
+            <td><span class="tag amber">Early FT</span><br />~2027&ndash;2029</td>
+            <td>Thousands of physical qubits &rarr; tens of logical</td>
+            <td>Mid-sized molecules, ~20-qubit active spaces. Trotterized UCCSD becomes practical.</td>
+          </tr>
+          <tr>
+            <td><span class="tag coral">Fault-tolerant</span><br />2029+</td>
+            <td>Millions of physical &rarr; hundreds of logical</td>
+            <td>The problems that motivate the field: transition metal catalysis, nitrogenase, fusion materials. Quantum Phase Estimation becomes the standard.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="wrap read">
+    <p>Two things to internalize from this table:</p>
+    <ol>
+      <li><strong>The interesting chemistry sits in the 2029+ row.</strong> That&rsquo;s the row where quantum methods are expected to beat classical ones on problems of actual scientific value. The NISQ row is <em>necessary infrastructure development</em>, not production results.</li>
+      <li><strong>The order-of-magnitude jumps come from error correction, not from adding more physical qubits.</strong> Going from 156 to 1560 physical qubits would still be NISQ. The fault-tolerant transition unlocks 100&times; more <em>usable</em> compute even if total qubit count grows modestly.</li>
+    </ol>
+
+    <h2>Why it matters for our problem</h2>
+    <p>This repo lives at the lowest milestone on the diagram. WH<sup>&minus;</sup> at 6 qubits. That&rsquo;s deliberate.</p>
+    <p>Here&rsquo;s the part most readers miss: <strong>the same code in <code>03_wh_binding.ipynb</code> extends through every milestone on the chart.</strong> What changes is parameters, not architecture:</p>
+  </div>
+
+  <div class="wrap">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>What you change</th>
+            <th>NISQ &middot; today</th>
+            <th>Early-FT (2027+)</th>
+            <th>FT-target (2029+)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Geometry</td>
+            <td>W + H (diatomic)</td>
+            <td>W<sub>2</sub>H<sub>2</sub>, small clusters</td>
+            <td>W<sub>8</sub> + vacancy + H</td>
+          </tr>
+          <tr>
+            <td>Basis</td>
+            <td><code>LANL2DZ</code> / <code>STO-3G</code></td>
+            <td><code>def2-SVPD</code></td>
+            <td><code>def2-TZVPD-J</code></td>
+          </tr>
+          <tr>
+            <td>Active space</td>
+            <td><code>CAS(4, 4)</code> &rarr; 6q</td>
+            <td><code>CAS(10, 10)</code> &rarr; ~16q</td>
+            <td><code>CAS(20, 20)</code> &rarr; ~30+q</td>
+          </tr>
+          <tr>
+            <td>Ansatz</td>
+            <td><code>EfficientSU2(reps=4)</code></td>
+            <td>UCCSD-trotterized</td>
+            <td>QPE (Quantum Phase Estimation)</td>
+          </tr>
+          <tr>
+            <td>Backend</td>
+            <td>Aer sim + single-shot QPU</td>
+            <td>NISQ QPU + error mitigation</td>
+            <td>Fault-tolerant QPU</td>
+          </tr>
+          <tr>
+            <td>Result</td>
+            <td>Demonstration</td>
+            <td>Useful approximation</td>
+            <td>Chemical accuracy</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="wrap read">
+    <p><strong>This is what &ldquo;scales when hardware catches up&rdquo; actually means in practice.</strong> Not &ldquo;rewrite everything&rdquo; &mdash; just substitute different objects into the same Qiskit pipeline.</p>
+    <p>The investment you make today in understanding this workflow pays off across the entire roadmap. Whoever picks up your repo in 2029 with access to fault-tolerant hardware can swap out the ansatz line and the backend line, scale the active space, and be doing real fusion-wall chemistry.</p>
+
+    <h3>Where to go next</h3>
+    <p>Concept 6 walks through the <a href="06-sim-vs-qpu.html">train-on-simulator, validate-on-QPU</a> pattern that&rsquo;s standard for the entire NISQ era. If you want to see <em>why</em> the qubit numbers in the tables above are what they are, back up to <a href="04-active-spaces.html">Active spaces</a>.</p>
+
+    <nav class="pager">
+      <a href="04-active-spaces.html"><span class="dir">← Previous</span><span class="ttl">Active spaces</span></a>
+      <a class="next" href="06-sim-vs-qpu.html"><span class="dir">Next →</span><span class="ttl">Simulator vs QPU</span></a>
+    </nav>
+  </div>
+</article>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color:#cc785c;"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+          Quantum Fusion POC
+        </a>
+        <p style="margin-top:14px; max-width:34ch;">Seven short primers, in order. Each builds on the last.</p>
+      </div>
+      <div>
+        <p class="foot-h">Concepts</p>
+        <ul>
+          <li><a href="01-qubits-and-superposition.html">1 · Qubits</a></li>
+          <li><a href="02-hamiltonians.html">2 · Hamiltonians</a></li>
+          <li><a href="03-vqe-loop.html">3 · The VQE loop</a></li>
+          <li><a href="04-active-spaces.html">4 · Active spaces</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-h">&nbsp;</p>
+        <ul>
+          <li><a href="05-scaling-roadmap.html">5 · Scaling roadmap</a></li>
+          <li><a href="06-sim-vs-qpu.html">6 · Simulator vs QPU</a></li>
+          <li><a href="07-error-mitigation.html">7 · Error mitigation</a></li>
+          <li><a href="../index.html">← Back to the story</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine">An independent research prototype &mdash; not affiliated with or endorsed by IBM. Qiskit&reg; and IBM&nbsp;Quantum&reg; are trademarks of IBM. MIT licensed.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="../assets/site.js" defer></script>
+</body>
+</html>

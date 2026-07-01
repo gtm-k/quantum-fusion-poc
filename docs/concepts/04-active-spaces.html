@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<title>Active spaces — Quantum Fusion POC</title>
+<meta name="description" content="The handful of orbitals where the chemistry actually happens — the only part we put on the quantum computer, and why WH⁻ fits in 6 qubits." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/site.css" />
+</head>
+<body>
+<div class="progress" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+      Quantum Fusion POC
+    </a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    <div class="nav-links">
+      <a href="../index.html#story">The story</a>
+      <a href="../index.html#notebooks">Notebooks</a>
+      <a href="index.html">Concepts</a>
+      <a href="../faq.html">FAQ</a>
+      <a class="nav-cta" href="https://github.com/gtm-k/quantum-fusion-poc">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<article class="band band-tight">
+  <div class="wrap read">
+    <p class="kicker">Concept 4 of 7 · How we make it fit</p>
+    <h1>Active spaces</h1>
+    <p class="serif-quote">Molecules have thousands of orbitals; almost all of them are boring &mdash; full or empty all the time. The <em>active space</em> is the handful of orbitals where the interesting chemistry actually happens, and it&rsquo;s the only part we put on the quantum computer.</p>
+
+    <figure class="figure diagram-frame reveal">
+      <svg viewBox="0 0 440 360" role="img" aria-label="Molecular orbitals split into three energy bands: high virtual orbitals that are always empty and low core orbitals that are always full are both frozen out; only the middle active-space band, where the W–H bond forms, is encoded into qubits. For WH minus this is CAS(4, 4): 8 spin-orbitals, tapered to 6 circuit qubits.">
+        <defs>
+          <marker id="up" viewBox="0 0 10 10" refX="5" refY="2" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 8 L5 0 L10 8 z" fill="#6c6a64"/></marker>
+        </defs>
+
+        <!-- energy axis -->
+        <line x1="48" y1="34" x2="48" y2="300" stroke="#6c6a64" stroke-width="1.2" marker-end="url(#up)"/>
+        <text x="26" y="176" font-family="Cormorant Garamond, serif" font-size="16" font-style="italic" fill="#6c6a64" text-anchor="middle" transform="rotate(-90 26,176)">energy</text>
+
+        <!-- virtual band (frozen, always empty) -->
+        <line x1="68" y1="48" x2="220" y2="48" stroke="#6c6a64" stroke-width="2"/>
+        <line x1="68" y1="64" x2="220" y2="64" stroke="#6c6a64" stroke-width="2"/>
+        <line x1="68" y1="80" x2="220" y2="80" stroke="#6c6a64" stroke-width="2"/>
+        <line x1="68" y1="96" x2="220" y2="96" stroke="#6c6a64" stroke-width="2"/>
+        <text x="244" y="66" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#6c6a64">Virtual orbitals</text>
+        <text x="244" y="81" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#8e8b82">always empty · frozen out</text>
+
+        <!-- active band highlight -->
+        <rect x="60" y="118" width="172" height="94" rx="8" fill="#cc785c" fill-opacity="0.07" stroke="#cc785c" stroke-opacity="0.5" stroke-width="1"/>
+
+        <!-- active orbitals (dashed coral) -->
+        <line x1="68" y1="134" x2="220" y2="134" stroke="#cc785c" stroke-width="2.4" stroke-dasharray="5 3"/>
+        <line x1="68" y1="152" x2="220" y2="152" stroke="#cc785c" stroke-width="2.4" stroke-dasharray="5 3"/>
+        <line x1="68" y1="176" x2="220" y2="176" stroke="#cc785c" stroke-width="2.4" stroke-dasharray="5 3"/>
+        <line x1="68" y1="194" x2="220" y2="194" stroke="#cc785c" stroke-width="2.4" stroke-dasharray="5 3"/>
+        <!-- electrons in the two occupied active orbitals -->
+        <circle cx="120" cy="176" r="3.2" fill="#141413"/>
+        <circle cx="150" cy="176" r="3.2" fill="#141413"/>
+        <circle cx="120" cy="194" r="3.2" fill="#141413"/>
+        <circle cx="150" cy="194" r="3.2" fill="#141413"/>
+        <!-- HOMO / LUMO tags -->
+        <text x="226" y="156" font-family="IBM Plex Sans, sans-serif" font-size="9.5" font-weight="600" fill="#2f7a68">LUMO</text>
+        <text x="226" y="180" font-family="IBM Plex Sans, sans-serif" font-size="9.5" font-weight="600" fill="#2f7a68">HOMO</text>
+        <!-- active band label block -->
+        <text x="284" y="150" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="700" fill="#b0583b">Active space</text>
+        <text x="284" y="166" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#6c6a64">→ encoded into qubits</text>
+        <text x="284" y="185" font-family="JetBrains Mono, monospace" font-size="11" fill="#b0583b">CAS(4, 4)</text>
+
+        <!-- core band (frozen, always full) -->
+        <line x1="68" y1="236" x2="220" y2="236" stroke="#6c6a64" stroke-width="2"/>
+        <circle cx="120" cy="236" r="3.2" fill="#141413"/><circle cx="150" cy="236" r="3.2" fill="#141413"/>
+        <line x1="68" y1="252" x2="220" y2="252" stroke="#6c6a64" stroke-width="2"/>
+        <circle cx="120" cy="252" r="3.2" fill="#141413"/><circle cx="150" cy="252" r="3.2" fill="#141413"/>
+        <line x1="68" y1="268" x2="220" y2="268" stroke="#6c6a64" stroke-width="2"/>
+        <circle cx="120" cy="268" r="3.2" fill="#141413"/><circle cx="150" cy="268" r="3.2" fill="#141413"/>
+        <line x1="68" y1="284" x2="220" y2="284" stroke="#6c6a64" stroke-width="2"/>
+        <circle cx="120" cy="284" r="3.2" fill="#141413"/><circle cx="150" cy="284" r="3.2" fill="#141413"/>
+        <text x="244" y="256" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#6c6a64">Core orbitals</text>
+        <text x="244" y="271" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#8e8b82">always full · frozen out</text>
+
+        <!-- qubit-counting chain -->
+        <line x1="48" y1="320" x2="392" y2="320" stroke="#e6dfd8" stroke-width="1"/>
+        <text x="220" y="342" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#181715">CAS(4, 4) → 8 spin-orbitals → 6 circuit qubits</text>
+      </svg>
+      <figcaption>Orbitals split into three energy bands. Core and virtual orbitals are frozen; only the active-space band &mdash; where the W&ndash;H bond forms &mdash; is put on the chip. For WH<sup>&minus;</sup> that is <span class="mono">CAS(4, 4)</span>: 8 spin-orbitals, tapered to 6 circuit qubits with a Z<sub>2</sub> symmetry.</figcaption>
+    </figure>
+
+    <h2>What it actually means</h2>
+    <p>A molecule&rsquo;s electrons sit in <strong>molecular orbitals</strong>, conceptually like shells in a building. Real molecules have <em>thousands</em> of orbitals in any realistic basis set. But for almost every chemistry question you might ask:</p>
+    <ul>
+      <li>The deep <strong>core</strong> orbitals are always fully occupied. The electrons there don&rsquo;t go anywhere. They affect the energy by a constant amount and you can subtract that off.</li>
+      <li>The very high <strong>virtual</strong> orbitals are always empty. Electrons don&rsquo;t visit them at any reasonable temperature.</li>
+    </ul>
+    <p>So you carve out a band in the middle &mdash; the <strong>active space</strong> &mdash; containing the highest few occupied orbitals and the lowest few empty orbitals. Those are where electrons can actually be promoted, where bond formation and breaking happens, where electron correlation gets interesting. <em>Only the active space goes onto the quantum computer.</em></p>
+    <p>The notation <code>CAS(n, m)</code> means <strong>C</strong>omplete <strong>A</strong>ctive <strong>S</strong>pace with <code>n</code> electrons distributed among <code>m</code> orbitals. Each spatial orbital is two qubits (one for spin-up, one for spin-down), so <code>CAS(4, 4)</code> is 8 qubits before optimization. Symmetry tricks (the <strong>parity mapper</strong> with Z<sub>2</sub> tapering) shave that down to 6 qubits &mdash; which is what we use for WH<sup>&minus;</sup>.</p>
+    <p>This isn&rsquo;t an approximation made up for quantum computers. Classical chemistry has used active spaces for decades &mdash; they&rsquo;re how you make high-accuracy methods like CASSCF and CASPT2 tractable. The quantum adaptation is just: the same active space, encoded into qubits instead of into a classical wavefunction expansion.</p>
+
+    <h2>Why it matters for our problem</h2>
+    <p>The whole reason WH<sup>&minus;</sup> fits in 6 qubits is the active space.</p>
+    <ul>
+      <li>Tungsten has 74 electrons. Even with the LANL2DZ effective core potential (which freezes 60 inner-shell electrons as a fixed background), there are still 14 valence electrons plus hydrogen&rsquo;s 2 &mdash; that&rsquo;s 16 electrons across dozens of valence orbitals.</li>
+      <li>We pick <code>CAS(4, 4)</code> &mdash; 4 electrons in 4 orbitals &mdash; centred on the W&ndash;H bonding region. Those are the orbitals where the W&ndash;H &sigma; bond is forming and where electron correlation matters most.</li>
+      <li>Everything else (the other 12 valence electrons, all the higher virtuals) is folded into the Hartree-Fock background and treated as a constant.</li>
+    </ul>
+
+    <div class="note caution">
+      <span class="note-label">The caveat</span>
+      <p><strong>Automatic active-space selection drifts at larger bond distances.</strong> Our notebook&rsquo;s PEC is capped at r = 3.0 &Aring; because qiskit-nature&rsquo;s <code>ActiveSpaceTransformer</code> starts picking different (non-bonding) orbitals beyond that range. Production-grade work uses natural-orbital or AO-character-based selection, which keeps a consistent active space across geometries.</p>
+    </div>
+
+    <h3>Scaling up: from 6 qubits to 200+</h3>
+    <p>The fusion-wall problem at scale &mdash; tungsten vacancy + embedded hydrogens &mdash; needs roughly <code>CAS(20, 20)</code> to capture the multi-centre correlation. In the <a href="https://github.com/gtm-k/quantum-fusion-poc#a-note-on-the-word-qubits">canonical terminology from the README</a>, that&rsquo;s ~40 spin-orbital qubits before tapering, ~36 circuit qubits after a Z<sub>2</sub> taper. Even bigger problems (a W<sub>8</sub> vacancy cluster with multiple H sites, the real production target) push into the ~150+ circuit-qubit regime &mdash; which is where the error-correction story starts mattering, because at that circuit depth noise compounds faster than NISQ chips can tolerate. The &ldquo;200+ logical qubits&rdquo; figure you&rsquo;ll see quoted elsewhere is the error-corrected count needed to <em>actually run</em> those circuits to chemical accuracy.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Problem</th>
+            <th scope="col">Active space</th>
+            <th scope="col">Qubits</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>WH<sup>&minus;</sup> binding <span class="tag neutral">this POC</span></td>
+            <td><span class="mono">CAS(4, 4)</span></td>
+            <td>8 spin-orbitals → <strong>6</strong> circuit (after Z<sub>2</sub> taper)</td>
+          </tr>
+          <tr>
+            <td>Single W vacancy + embedded H</td>
+            <td><span class="mono">CAS(20, 20)</span></td>
+            <td>~40 spin-orbitals → <strong>~36</strong> circuit (after Z<sub>2</sub> taper)</td>
+          </tr>
+          <tr>
+            <td>W<sub>8</sub> vacancy cluster <span class="tag neutral">production target</span></td>
+            <td>multi-centre</td>
+            <td><strong>~150+</strong> circuit</td>
+          </tr>
+          <tr>
+            <td>Fault-tolerant execution</td>
+            <td>error-corrected</td>
+            <td><strong>200+</strong> logical</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <nav class="pager">
+      <a href="03-vqe-loop.html"><span class="dir">← Prev</span><span class="ttl">The VQE loop</span></a>
+      <a class="next" href="05-scaling-roadmap.html"><span class="dir">Next →</span><span class="ttl">Scaling roadmap</span></a>
+    </nav>
+  </div>
+</article>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color:#cc785c;"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+          Quantum Fusion POC
+        </a>
+        <p style="margin-top:14px; max-width:34ch;">Seven short primers, in order. Each builds on the last.</p>
+      </div>
+      <div>
+        <p class="foot-h">Concepts</p>
+        <ul>
+          <li><a href="01-qubits-and-superposition.html">1 · Qubits</a></li>
+          <li><a href="02-hamiltonians.html">2 · Hamiltonians</a></li>
+          <li><a href="03-vqe-loop.html">3 · The VQE loop</a></li>
+          <li><a href="04-active-spaces.html">4 · Active spaces</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-h">&nbsp;</p>
+        <ul>
+          <li><a href="05-scaling-roadmap.html">5 · Scaling roadmap</a></li>
+          <li><a href="06-sim-vs-qpu.html">6 · Simulator vs QPU</a></li>
+          <li><a href="07-error-mitigation.html">7 · Error mitigation</a></li>
+          <li><a href="../index.html">← Back to the story</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine">An independent research prototype &mdash; not affiliated with or endorsed by IBM. Qiskit&reg; and IBM&nbsp;Quantum&reg; are trademarks of IBM. MIT licensed.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="../assets/site.js" defer></script>
+</body>
+</html>

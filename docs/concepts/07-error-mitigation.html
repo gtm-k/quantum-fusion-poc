@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<title>Error mitigation — Quantum Fusion POC</title>
+<meta name="description" content="Why more shots can't fix a biased QPU result, and how Zero-Noise Extrapolation (ZNE) fights systematic error on today's hardware." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/site.css" />
+</head>
+<body>
+<!-- impeccable-disable em-dash-overuse -- the dashes are minus signs (−97.9 mHa, −67.5411 Ha), numeric ranges (2–10×) and the --mitigation CLI flag, not prose em-dashes -->
+<div class="progress" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+      Quantum Fusion POC
+    </a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    <div class="nav-links">
+      <a href="../index.html#story">The story</a>
+      <a href="../index.html#notebooks">Notebooks</a>
+      <a href="index.html">Concepts</a>
+      <a href="../faq.html">FAQ</a>
+      <a class="nav-cta" href="https://github.com/gtm-k/quantum-fusion-poc">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<article class="band band-tight">
+  <div class="wrap read">
+    <p class="kicker">Concept 7 of 7 · Fixing the bias</p>
+    <h1>Error mitigation: why more shots can&rsquo;t save you, but ZNE might</h1>
+    <p class="serif-quote">More shots only shrink <em>random</em> scatter; they do nothing to the <em>systematic bias</em> that dominates a deep-circuit QPU result. Zero-Noise Extrapolation (ZNE) is the one bias-fighter you can run on today&rsquo;s hardware, and it is now wired into <span class="mono">wh_qpu_validation.py</span> behind an opt-in mitigation flag.</p>
+
+    <figure class="figure diagram-frame reveal">
+      <svg viewBox="0 0 400 300" role="img" aria-label="Zero-noise extrapolation: energy measured at noise factors 1, 3 and 5 rises with noise; a dashed line extrapolates the trend back to noise factor 0 to give the ZNE estimate.">
+        <!-- axes -->
+        <line x1="88" y1="40" x2="88" y2="248" stroke="#141413" stroke-width="1.4"/>
+        <line x1="88" y1="248" x2="372" y2="248" stroke="#141413" stroke-width="1.4"/>
+        <!-- unreachable zero-noise limit -->
+        <line x1="110" y1="52" x2="110" y2="248" stroke="#6c6a64" stroke-width="1" stroke-dasharray="3 3"/>
+        <!-- x ticks -->
+        <line x1="110" y1="248" x2="110" y2="253" stroke="#141413" stroke-width="1"/>
+        <line x1="154" y1="248" x2="154" y2="253" stroke="#141413" stroke-width="1"/>
+        <line x1="242" y1="248" x2="242" y2="253" stroke="#141413" stroke-width="1"/>
+        <line x1="330" y1="248" x2="330" y2="253" stroke="#141413" stroke-width="1"/>
+        <!-- measured trend (rises with noise) -->
+        <polyline points="154,158 242,112 330,70" fill="none" stroke="#cc785c" stroke-width="2.4"/>
+        <!-- extrapolation back to noise 0 -->
+        <line class="draw" x1="154" y1="158" x2="110" y2="181" stroke="#cc785c" stroke-width="2.4" stroke-dasharray="5 4"/>
+        <!-- measured points -->
+        <circle cx="154" cy="158" r="4.5" fill="#cc785c"/>
+        <circle cx="242" cy="112" r="4.5" fill="#cc785c"/>
+        <circle cx="330" cy="70" r="4.5" fill="#cc785c"/>
+        <!-- ZNE estimate at factor 0 -->
+        <circle cx="110" cy="181" r="5.5" fill="#faf9f5" stroke="#45a08e" stroke-width="2.6"/>
+        <!-- annotations -->
+        <text x="256" y="52" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6c6a64">amplified noise</text>
+        <text x="338" y="60" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#b0583b">×5</text>
+        <text x="250" y="102" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#b0583b">×3</text>
+        <text x="170" y="162" text-anchor="start" font-family="JetBrains Mono, monospace" font-size="12" fill="#b0583b">×1</text>
+        <text x="170" y="176" text-anchor="start" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6c6a64">raw run</text>
+        <text x="118" y="197" text-anchor="start" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="#2f7a68">ZNE estimate</text>
+        <!-- x tick numbers -->
+        <text x="110" y="267" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#141413">0</text>
+        <text x="154" y="267" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#141413">1</text>
+        <text x="242" y="267" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#141413">3</text>
+        <text x="330" y="267" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#141413">5</text>
+        <!-- axis titles -->
+        <text x="230" y="288" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6c6a64">noise factor</text>
+        <text transform="translate(30 148) rotate(-90)" text-anchor="middle" font-family="Cormorant Garamond, serif" font-style="italic" font-size="16" fill="#141413">energy</text>
+      </svg>
+      <figcaption>Zero-noise extrapolation. You can&rsquo;t run the chip at zero noise, so you measure the energy at amplified noise factors (<span class="mono">×1, ×3, ×5</span>) and fit the trend back to the noise-free limit.</figcaption>
+    </figure>
+
+    <h2>Two completely different kinds of error</h2>
+    <p>Every QPU energy carries two kinds of error that behave nothing alike. One is random <em>shot noise</em> (statistical / variance); the other is <em>systematic bias</em>:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th></th><th>Shot noise</th><th>Systematic bias</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Source</th><td>Measurement is a coin flip; you average finite samples</td><td>Imperfect gates, decoherence, readout bias, crosstalk</td></tr>
+          <tr><th scope="row">Direction</th><td>Random: scatters both ways</td><td>Consistent: pushes the answer the <em>same</em> way every shot</td></tr>
+          <tr><th scope="row">Shrinks with more shots?</th><td><strong>Yes</strong>, as 1/&radic;N (4&times; shots &rarr; &frac12; the scatter)</td><td><strong>No</strong>: averaging just converges onto the biased value</td></tr>
+          <tr><th scope="row">Analogy</th><td>A fuzzy bathroom scale</td><td>A scale miscalibrated +10&nbsp;lb</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note key">
+      <span class="note-label">Why not just take more shots?</span>
+      <p>This is the whole answer: <strong>more shots make a wrong answer more precise, not more correct.</strong> You converge, beautifully, onto the biased number.</p>
+    </div>
+
+    <h3>The evidence is already in our own data</h3>
+    <p>The H<sub>2</sub> and WH<sup>&minus;</sup> validations both used <strong>4096 shots</strong>. If shot noise were the bottleneck, their errors would be similar. Instead WH<sup>&minus;</sup> was <strong>~6.5&times; worse</strong> (199.8 vs 30.6 mHa), and that ratio tracks <strong>circuit depth</strong>, not shot count. Shot noise is blind to depth; gate-error bias grows with it. That 6.5&times; is the fingerprint of bias, which is exactly what more shots cannot touch.</p>
+
+    <h2>How ZNE fights the bias</h2>
+    <p>You can&rsquo;t measure the zero-noise answer directly, but you <em>can</em> measure how the answer drifts as you deliberately make the chip noisier, then extrapolate back to the noise-free limit you can&rsquo;t reach. The diagram above traces exactly this.</p>
+    <p>In practice (qiskit-ibm-runtime <code>EstimatorV2</code>):</p>
+    <ul>
+      <li><strong>Gate folding</strong> amplifies noise by replacing each gate <code>G</code> with <code>G&middot;G<sup>&dagger;</sup>&middot;G</code> (same logical operation, more physical noise) at factors <code>[1, 3, 5]</code>.</li>
+      <li>The energy is measured at each factor, and an <strong>exponential extrapolator</strong> (falling back to <strong>linear</strong> if the fit fails on the degraded high-noise points) fits the trend back to factor 0.</li>
+      <li>We also enable <strong>twirled readout mitigation</strong> (measurement-error correction) in the same pass.</li>
+    </ul>
+    <p>ZNE only suppresses <em>real</em> hardware noise, so it is a <strong>no-op on the noiseless simulator</strong> and roughly <strong>multiplies QPU cost by the number of noise factors</strong> (~3&times; here, more with readout learning).</p>
+
+    <h2>How to run it in this repo</h2>
+    <p>The baseline (unmitigated) path remains the default; its only schema change is an added <code>mitigation_detail</code> field recording that no mitigation was applied:</p>
+    <pre><code># baseline: raw hardware (now records mitigation_detail = {"method": "none"})
+python scripts/wh_qpu_validation.py qpu
+
+# mitigated: ZNE + readout mitigation
+python scripts/wh_qpu_validation.py qpu --mitigation zne</code></pre>
+    <p>The mitigated run writes a <strong>separate</strong> artifact so the baseline proof stays intact:</p>
+    <pre><code>results/qpu_runs/wh_qpu_validation_zne_&lt;DATE&gt;.json</code></pre>
+    <p>That JSON records the full mitigation configuration, so the run is reproducible and self-describing:</p>
+    <pre><code>{
+  "mitigation": "zne",
+  "mitigation_detail": {
+    "method": "zne",
+    "measure_mitigation": true,
+    "zne_noise_factors": [1, 3, 5],
+    "zne_extrapolator": ["exponential", "linear"],
+    "note": "..."
+  },
+  "E_qpu_total_ha": "...",        // mitigated energy
+  "delta_E_mHa": "...",           // residual vs the simulator
+  "interpretation": "...compare against the unmitigated baseline..."
+}</code></pre>
+
+    <h2>What to realistically expect</h2>
+    <p>ZNE will <strong>help</strong>, but it will not make WH<sup>&minus;</sup> &ldquo;right&rdquo;:</p>
+    <ul>
+      <li>Typical gain is <strong>~2&ndash;10&times;</strong>. On our ~200 mHa that could plausibly drop &Delta;E <strong>below the ~110 mHa well depth</strong>, which would flip the WH<sup>&minus;</sup> result from <em>&ldquo;physically uninformative&rdquo;</em> to <em>&ldquo;the valley is visible.&rdquo;</em> That is a genuine, reportable <strong>methodology</strong> win.</li>
+      <li>It will <strong>not</strong> reach chemical accuracy (~1.6 mHa), not close.</li>
+      <li>At this depth (~30 layers, ~100 two-qubit gates), the noise-amplified runs are so degraded that the <strong>extrapolation itself can wobble or mislead</strong>. ZNE is near the edge of its reliable regime here, so the mitigated value is a <strong>methodology data point, not a chemistry result.</strong></li>
+    </ul>
+    <p>The ladder, for orientation: <strong>shots fight variance &middot; ZNE fights bias &middot; error correction fights both</strong> (the last only arrives with fault-tolerant hardware; see <a href="05-scaling-roadmap.html">05 &middot; Scaling roadmap</a>).</p>
+
+    <h2>Result (2026-05-31): a textbook &ldquo;edge of reliability&rdquo; outcome</h2>
+    <p>Ran on <code>ibm_marrakesh</code> (job <code>d8e6ucjo3njc73eub3v0</code>, 4096 shots, noise factors <code>[1, 3, 5]</code>). What ZNE did to the WH<sup>&minus;</sup> error:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th></th><th>Unmitigated baseline</th><th>ZNE</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">&Delta;E vs simulator</th><td>+199.8 mHa</td><td><strong>&minus;97.9 mHa</strong></td></tr>
+          <tr><th scope="row">|error| magnitude</th><td>199.8 mHa</td><td><strong>97.9 mHa (&asymp;2&times; smaller)</strong></td></tr>
+          <tr><th scope="row">vs exact CASCI ground state (&minus;67.4545 Ha)</th><td>above it</td><td><strong>~87 mHa <em>below</em> it</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>So ZNE <strong>roughly halved the error magnitude</strong>, and <code>97.9 &lt; 110</code>, so it dipped under the well depth. But the sign flipped: the mitigated energy (&minus;67.5411 Ha) landed <strong>below the exact ground state</strong>, which is physically impossible for a true expectation value. ZNE <strong>over-extrapolated</strong>, trading a +200 mHa bias for an ~&minus;87 mHa overshoot.</p>
+
+    <div class="note caution">
+      <span class="note-label">Edge of reliability</span>
+      <p>This is exactly the failure mode this primer predicted: at ~30 layers / ~100 two-qubit gates, the 3&times; and 5&times; points are so degraded that the extrapolation overshoots. <strong>Verdict: a genuine magnitude improvement, but a methodology data point, not a trustworthy chemistry result.</strong> A single ZNE point also carries its own variance, so the overshoot is indicative, not a precise bias measurement.</p>
+    </div>
+
+    <p>Full record: <a href="../../results/qpu_runs/wh_qpu_validation_zne_2026-05-31.json"><code>wh_qpu_validation_zne_2026-05-31.json</code></a>. The unmitigated baseline remains the reference result.</p>
+
+    <nav class="pager">
+      <a href="06-sim-vs-qpu.html"><span class="dir">← Previous</span><span class="ttl">Simulator vs QPU</span></a>
+      <a class="next" href="index.html"><span class="dir">Next →</span><span class="ttl">Back to all concepts</span></a>
+    </nav>
+  </div>
+</article>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color:#cc785c;"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+          Quantum Fusion POC
+        </a>
+        <p style="margin-top:14px; max-width:34ch;">Seven short primers, in order. Each builds on the last.</p>
+      </div>
+      <div>
+        <p class="foot-h">Concepts</p>
+        <ul>
+          <li><a href="01-qubits-and-superposition.html">1 · Qubits</a></li>
+          <li><a href="02-hamiltonians.html">2 · Hamiltonians</a></li>
+          <li><a href="03-vqe-loop.html">3 · The VQE loop</a></li>
+          <li><a href="04-active-spaces.html">4 · Active spaces</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-h">&nbsp;</p>
+        <ul>
+          <li><a href="05-scaling-roadmap.html">5 · Scaling roadmap</a></li>
+          <li><a href="06-sim-vs-qpu.html">6 · Simulator vs QPU</a></li>
+          <li><a href="07-error-mitigation.html">7 · Error mitigation</a></li>
+          <li><a href="../index.html">← Back to the story</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine">An independent research prototype &mdash; not affiliated with or endorsed by IBM. Qiskit&reg; and IBM&nbsp;Quantum&reg; are trademarks of IBM. MIT licensed.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="../assets/site.js" defer></script>
+</body>
+</html>

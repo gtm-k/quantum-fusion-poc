@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<title>Hamiltonians and ground states — Quantum Fusion POC</title>
+<meta name="description" content="What a Hamiltonian is, why the ground state is the whole game in chemistry, and how it drives every calculation in this repo." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/site.css" />
+</head>
+<body>
+<div class="progress" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+      Quantum Fusion POC
+    </a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    <div class="nav-links">
+      <a href="../index.html#story">The story</a>
+      <a href="../index.html#notebooks">Notebooks</a>
+      <a href="index.html">Concepts</a>
+      <a href="../faq.html">FAQ</a>
+      <a class="nav-cta" href="https://github.com/gtm-k/quantum-fusion-poc">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<article class="band band-tight">
+  <div class="wrap read">
+    <p class="kicker">Concept 2 of 7 · What we&rsquo;re looking for</p>
+    <h1>Hamiltonians and ground states</h1>
+    <p class="serif-quote">A Hamiltonian is the equation that tells you the energy of every possible state of a system; the <em>ground state</em> is whichever state has the lowest energy, and finding it is what chemistry is really about.</p>
+
+    <figure class="figure diagram-frame reveal">
+      <svg viewBox="0 0 420 240" role="img" aria-label="Energy landscape: the Hamiltonian defines a curve of energy versus configuration. The ground state sits at the lowest valley; higher-energy excited states sit at the two peaks.">
+        <!-- axes -->
+        <line x1="52" y1="28" x2="52" y2="196" stroke="#181715" stroke-width="1.4"/>
+        <line x1="52" y1="196" x2="404" y2="196" stroke="#181715" stroke-width="1.4"/>
+        <polygon points="48,36 52,26 56,36" fill="#141413"/>
+        <polygon points="396,192 406,196 396,200" fill="#141413"/>
+        <!-- energy landscape defined by the Hamiltonian -->
+        <path class="draw" d="M 66 96 C 90 96, 100 46, 122 46 C 150 46, 200 152, 228 152 C 256 152, 306 46, 334 46 C 356 46, 366 96, 390 96" fill="none" stroke="#45a08e" stroke-width="2.6"/>
+        <!-- excited-state peaks -->
+        <circle cx="122" cy="46" r="4" fill="#6c6a64"/>
+        <circle cx="334" cy="46" r="4" fill="#6c6a64"/>
+        <!-- ground-state valley -->
+        <circle cx="228" cy="152" r="6" fill="#cc785c"/>
+        <!-- labels -->
+        <text x="30" y="112" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6c6a64" transform="rotate(-90 30,112)">energy</text>
+        <text x="228" y="222" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6c6a64">configuration (wavefunction parameters)</text>
+        <text x="122" y="34" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#6c6a64">excited</text>
+        <text x="334" y="34" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#6c6a64">excited</text>
+        <text x="228" y="174" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="#b0583b">ground state (the answer)</text>
+        <text x="150" y="70" font-family="Cormorant Garamond, serif" font-size="17" font-style="italic" fill="#141413">Ĥ</text>
+      </svg>
+      <figcaption>The Hamiltonian defines this whole energy landscape. The <span class="mono">ground state</span> is the valley bottom; VQE&rsquo;s job is to slide down into it.</figcaption>
+    </figure>
+
+    <h2>What it actually means</h2>
+    <p>The <strong>Hamiltonian</strong> (written <span class="mono">Ĥ</span>) is the mathematical object that encodes every interaction in a system. For a molecule, it sums up:</p>
+    <ul>
+      <li>The kinetic energy of each electron</li>
+      <li>The attraction between each electron and each nucleus</li>
+      <li>The repulsion between each pair of electrons</li>
+      <li>The repulsion between each pair of nuclei</li>
+    </ul>
+    <p>Once you know where the atoms are sitting, the Hamiltonian is fully determined. It&rsquo;s not something you guess &mdash; it falls out of the geometry.</p>
+    <p>The Hamiltonian assigns an <strong>energy</strong> to every possible state of the system. Some states have high energy (electrons piled on top of each other, unfavourable arrangements), some have low energy (electrons settled into the optimal pattern for that geometry).</p>
+    <p>The <strong>ground state</strong> is whichever state has the lowest possible energy. It&rsquo;s the state the molecule actually occupies at zero temperature &mdash; and it&rsquo;s what determines all the chemistry: bond strengths, geometries, reactivity.</p>
+    <div class="note key">
+      <span class="note-label">Why brute force fails</span>
+      <p>In matrix language: the Hamiltonian is a (huge) matrix, and the ground state is its <strong>smallest eigenvalue&rsquo;s eigenvector</strong>. For 50 electrons that matrix has on the order of <span class="mono">10<sup>20</sup></span> rows. You cannot store it, let alone diagonalize it. So we need a smarter approach than brute force &mdash; that&rsquo;s what VQE is.</p>
+    </div>
+
+    <h2>Why it matters for our problem</h2>
+    <p>When we ask &ldquo;how strongly does tungsten bind hydrogen?&rdquo;, what we&rsquo;re really asking is:</p>
+    <p class="serif-quote">What&rsquo;s the lowest-energy state of (W + H together), and how does that compare to the lowest-energy states of (W alone) plus (H alone)?</p>
+    <p>The difference is the binding energy. So <em>everything</em> in this repo &mdash; classical pyscf calculations, VQE on simulator, VQE on QPU &mdash; is ultimately a ground-state-finding exercise on different Hamiltonians.</p>
+    <p>In <code>03_wh_binding.ipynb</code> we build the Hamiltonian for WH<sup>&minus;</sup> at one geometry, then we scan through different W&ndash;H bond distances and rebuild it each time. The curve we plot (<code>results/wh_minus_pec.png</code>) is just the ground-state energy of each Hamiltonian as a function of distance &mdash; the <strong>potential energy curve</strong>. Its minimum tells us the equilibrium bond length; its depth tells us how much energy you&rsquo;d need to pull the atoms apart.</p>
+
+    <nav class="pager">
+      <a href="index.html"><span class="dir">← Index</span><span class="ttl">All seven concepts</span></a>
+      <a class="next" href="03-vqe-loop.html"><span class="dir">Next →</span><span class="ttl">The VQE loop</span></a>
+    </nav>
+  </div>
+</article>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color:#cc785c;"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+          Quantum Fusion POC
+        </a>
+        <p style="margin-top:14px; max-width:34ch;">Seven short primers, in order. Each builds on the last.</p>
+      </div>
+      <div>
+        <p class="foot-h">Concepts</p>
+        <ul>
+          <li><a href="01-qubits-and-superposition.html">1 · Qubits</a></li>
+          <li><a href="02-hamiltonians.html">2 · Hamiltonians</a></li>
+          <li><a href="03-vqe-loop.html">3 · The VQE loop</a></li>
+          <li><a href="04-active-spaces.html">4 · Active spaces</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-h">&nbsp;</p>
+        <ul>
+          <li><a href="05-scaling-roadmap.html">5 · Scaling roadmap</a></li>
+          <li><a href="06-sim-vs-qpu.html">6 · Simulator vs QPU</a></li>
+          <li><a href="07-error-mitigation.html">7 · Error mitigation</a></li>
+          <li><a href="../index.html">← Back to the story</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine">An independent research prototype &mdash; not affiliated with or endorsed by IBM. Qiskit&reg; and IBM&nbsp;Quantum&reg; are trademarks of IBM. MIT licensed.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="../assets/site.js" defer></script>
+</body>
+</html>

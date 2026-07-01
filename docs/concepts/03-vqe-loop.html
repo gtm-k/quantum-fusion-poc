@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<title>The VQE loop — Quantum Fusion POC</title>
+<meta name="description" content="VQE is a hybrid loop: a quantum circuit guesses a molecule's ground state, a classical optimizer adjusts the dials, and it runs until the energy stops dropping." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/site.css" />
+</head>
+<body>
+<div class="progress" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+      Quantum Fusion POC
+    </a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    <div class="nav-links">
+      <a href="../index.html#story">The story</a>
+      <a href="../index.html#notebooks">Notebooks</a>
+      <a href="index.html">Concepts</a>
+      <a href="../faq.html">FAQ</a>
+      <a class="nav-cta" href="https://github.com/gtm-k/quantum-fusion-poc">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<article class="band band-tight">
+  <div class="wrap read">
+    <p class="kicker">Concept 3 of 7 · How we find it</p>
+    <h1>The VQE loop</h1>
+    <p class="serif-quote">VQE is a <em>thermostat</em> for energy &mdash; a quantum circuit prepares a guess at the ground state, a classical optimizer measures how good the guess is and adjusts the dials, and the loop keeps going until the energy stops dropping.</p>
+
+    <figure class="figure diagram-frame reveal">
+      <svg viewBox="0 0 660 372" role="img" aria-label="The VQE hybrid loop: a quantum chip prepares a parametrized state and measures its energy E(theta); a classical optimizer proposes new parameters; the loop repeats until the energy stops dropping.">
+        <defs>
+          <marker id="vq-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#cc785c"/></marker>
+        </defs>
+
+        <!-- QUANTUM side -->
+        <rect x="40" y="40" width="270" height="180" rx="10" fill="#faf9f5" stroke="#45a08e" stroke-width="1.6"/>
+        <text x="175" y="66" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" font-weight="600" fill="#2f7a68">QUANTUM · the chip</text>
+
+        <!-- mini ansatz circuit -->
+        <text x="58" y="109" text-anchor="middle" font-family="Cormorant Garamond, serif" font-style="italic" font-size="15" fill="#141413">|0⟩</text>
+        <text x="58" y="137" text-anchor="middle" font-family="Cormorant Garamond, serif" font-style="italic" font-size="15" fill="#141413">|0⟩</text>
+        <line x1="74" y1="104" x2="296" y2="104" stroke="#141413" stroke-width="1.1"/>
+        <line x1="74" y1="132" x2="296" y2="132" stroke="#141413" stroke-width="1.1"/>
+
+        <rect x="92" y="94" width="42" height="20" rx="3" fill="#faf9f5" stroke="#45a08e" stroke-width="1.3"/>
+        <text x="113" y="108" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#141413">Ry(θ)</text>
+        <rect x="92" y="122" width="42" height="20" rx="3" fill="#faf9f5" stroke="#45a08e" stroke-width="1.3"/>
+        <text x="113" y="136" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#141413">Ry(θ)</text>
+
+        <!-- entangling CNOT -->
+        <line x1="155" y1="104" x2="155" y2="132" stroke="#141413" stroke-width="1.1"/>
+        <circle cx="155" cy="104" r="3.4" fill="#141413"/>
+        <circle cx="155" cy="132" r="6.5" fill="#faf9f5" stroke="#141413" stroke-width="1.1"/>
+        <line x1="155" y1="125.5" x2="155" y2="138.5" stroke="#141413" stroke-width="1.1"/>
+        <line x1="148.5" y1="132" x2="161.5" y2="132" stroke="#141413" stroke-width="1.1"/>
+
+        <rect x="178" y="94" width="42" height="20" rx="3" fill="#faf9f5" stroke="#45a08e" stroke-width="1.3"/>
+        <text x="199" y="108" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#141413">Ry(θ)</text>
+        <rect x="178" y="122" width="42" height="20" rx="3" fill="#faf9f5" stroke="#45a08e" stroke-width="1.3"/>
+        <text x="199" y="136" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#141413">Ry(θ)</text>
+
+        <text x="175" y="170" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6c6a64">ansatz <tspan font-family="Cormorant Garamond, serif" font-style="italic" font-size="15" fill="#141413">|ψ(θ)⟩</tspan></text>
+        <text x="175" y="196" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6c6a64">measure <tspan font-family="Cormorant Garamond, serif" font-style="italic" font-size="15" fill="#2f7a68">E(θ) = ⟨ψ(θ)|Ĥ|ψ(θ)⟩</tspan></text>
+
+        <!-- CLASSICAL side -->
+        <rect x="350" y="40" width="270" height="180" rx="10" fill="#faf9f5" stroke="#cc785c" stroke-width="1.6"/>
+        <text x="485" y="66" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" font-weight="600" fill="#b0583b">CLASSICAL · laptop / cloud</text>
+        <text x="485" y="102" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6c6a64">optimizer &mdash; <tspan font-family="JetBrains Mono, monospace" font-size="11" fill="#141413">COBYLA / SPSA</tspan></text>
+        <text x="485" y="130" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#141413">energy dropped &mdash; try <tspan font-family="Cormorant Garamond, serif" font-style="italic" font-size="14">θ + Δ</tspan></text>
+        <text x="485" y="154" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#141413">energy rose &mdash; go the other way</text>
+        <text x="485" y="188" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6c6a64">propose new <tspan font-family="Cormorant Garamond, serif" font-style="italic" font-size="14" fill="#141413">θ′</tspan></text>
+
+        <!-- forward arrow: E(theta) -->
+        <text x="330" y="119" text-anchor="middle" font-family="Cormorant Garamond, serif" font-style="italic" font-size="15" fill="#b0583b">E(θ)</text>
+        <line class="draw" x1="310" y1="130" x2="346" y2="130" stroke="#cc785c" stroke-width="2.2" marker-end="url(#vq-arrow)"/>
+
+        <!-- return loop arrow: new theta -->
+        <path class="draw" d="M485 220 L485 302 L175 302 L175 224" fill="none" stroke="#cc785c" stroke-width="2.2" marker-end="url(#vq-arrow)"/>
+        <text x="330" y="296" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="#6c6a64">new <tspan font-family="Cormorant Garamond, serif" font-style="italic" font-size="15" fill="#141413">θ′</tspan></text>
+
+        <!-- termination -->
+        <text x="330" y="340" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="#141413">Loops until <tspan font-family="Cormorant Garamond, serif" font-style="italic" font-size="15">E(θ)</tspan> stops dropping &mdash; ground-state energy ≈ <tspan font-family="Cormorant Garamond, serif" font-style="italic" font-size="15" fill="#2f7a68">E(θ*)</tspan></text>
+      </svg>
+      <figcaption>VQE is a hybrid loop. The quantum chip does what it is good at &mdash; state preparation and measurement &mdash; while the classical optimizer does the numerical search, repeating until the energy plateaus.</figcaption>
+    </figure>
+
+    <h2>What it actually means</h2>
+    <p>VQE &mdash; <strong>Variational Quantum Eigensolver</strong> &mdash; is a hybrid algorithm. Quantum computers and classical computers each do part of the work.</p>
+    <p>The quantum part is a <strong>parametrized circuit</strong> called the <em>ansatz</em>. It has a fixed structure but adjustable knobs &mdash; typically tens to hundreds of rotation angles. For any setting of the knobs <span class="mono">θ</span>, the circuit produces a specific quantum state <span class="mono">|ψ(θ)⟩</span>. By choosing the structure carefully, you make sure that <strong>somewhere</strong> in the space of possible <span class="mono">θ</span> values there is a state close to the molecule&rsquo;s true ground state.</p>
+    <p>The quantum chip&rsquo;s job is to:</p>
+    <ol>
+      <li>Run the circuit with the current <span class="mono">θ</span>.</li>
+      <li>Measure the expectation value of the Hamiltonian on the resulting state.</li>
+      <li>Report back a number: <span class="mono">E(θ)</span>.</li>
+    </ol>
+    <p>That number is the energy of the current guess. The lower it is, the closer the guess is to the ground state. (This is guaranteed by the <em>variational principle</em> &mdash; the energy of any state is always ≥ the true ground-state energy.)</p>
+    <p>The classical part is a <strong>numerical optimizer</strong> &mdash; the kind that has been solving &ldquo;minimize <span class="mono">f(x)</span>&rdquo; problems for decades. It takes the current <span class="mono">E(θ)</span>, proposes a new <span class="mono">θ</span> that should give lower energy, and asks the quantum chip to evaluate it. After many iterations the energy stops dropping, and the <span class="mono">θ</span> at that point is your VQE-approximation to the ground state.</p>
+    <p><strong>Why hybrid?</strong> Because today&rsquo;s quantum computers are too noisy to run very deep circuits. VQE keeps the circuit shallow (good for noise tolerance) and puts all the iterative work on the classical side. It is pragmatic.</p>
+    <div class="note caution">
+      <span class="note-label">The elegant alternative</span>
+      <p>The more elegant approach &mdash; <code>Quantum Phase Estimation</code> (QPE) &mdash; gives ground-state energies to arbitrarily high precision (within the chosen basis and active space) but needs fault-tolerant hardware to sustain the deep, repeated controlled-evolution circuits it requires. That hardware doesn&rsquo;t exist yet.</p>
+    </div>
+
+    <h2>Why it matters for our problem</h2>
+    <p>Every notebook in this repo, except the Bell state demo, is a VQE.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Notebook</th><th>Circuit qubits</th><th>Ansatz</th><th>Result</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>02_h2_binding.ipynb</code></td>
+            <td>2</td>
+            <td>small <code>EfficientSU2</code></td>
+            <td>H<sub>2</sub> ground state to nanohartree precision, in seconds</td>
+          </tr>
+          <tr>
+            <td><code>03_wh_binding.ipynb</code></td>
+            <td>6</td>
+            <td><code>EfficientSU2(reps=4)</code>, ~60 parameters</td>
+            <td>WH<sup>&minus;</sup> ground state to ~11 mHa accuracy &mdash; roughly 300 meV off, workable for a demonstration but a long way from chemical accuracy</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>The ansatz is the pivotal choice</h3>
+    <p>The ansatz choice is the most consequential decision in VQE. We use <code>EfficientSU2</code> &mdash; a hardware-efficient ansatz that maps cleanly onto real QPU gate sets &mdash; because it is robust and runs fast. The chemistry-aware alternative, <code>UCCSD</code>, would give better accuracy but takes ~24 minutes per cost evaluation at our problem size, which is impractical for a demonstration.</p>
+    <p>This trade-off (accuracy vs. tractability) is exactly the kind of choice that gets cheaper when fault-tolerant hardware arrives: QPE or trotterized <code>UCCSD</code> become practical, and within the chosen basis and active space (and with a suitable initial state preparation) you can drive the algorithmic error arbitrarily low.</p>
+    <div class="note key">
+      <span class="note-label">One nuance to carry forward</span>
+      <p>The basis-set and active-space errors don&rsquo;t go away &mdash; those are physics choices, not algorithm choices. Concept 4 picks up active spaces: why 6 qubits is enough for WH<sup>&minus;</sup>, and why it isn&rsquo;t enough for the real fusion problem.</p>
+    </div>
+
+    <nav class="pager">
+      <a href="02-hamiltonians.html"><span class="dir">← Previous</span><span class="ttl">Hamiltonians &amp; ground states</span></a>
+      <a class="next" href="04-active-spaces.html"><span class="dir">Next →</span><span class="ttl">Active spaces</span></a>
+    </nav>
+  </div>
+</article>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color:#cc785c;"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+          Quantum Fusion POC
+        </a>
+        <p style="margin-top:14px; max-width:34ch;">Seven short primers, in order. Each builds on the last.</p>
+      </div>
+      <div>
+        <p class="foot-h">Concepts</p>
+        <ul>
+          <li><a href="01-qubits-and-superposition.html">1 · Qubits</a></li>
+          <li><a href="02-hamiltonians.html">2 · Hamiltonians</a></li>
+          <li><a href="03-vqe-loop.html">3 · The VQE loop</a></li>
+          <li><a href="04-active-spaces.html">4 · Active spaces</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-h">&nbsp;</p>
+        <ul>
+          <li><a href="05-scaling-roadmap.html">5 · Scaling roadmap</a></li>
+          <li><a href="06-sim-vs-qpu.html">6 · Simulator vs QPU</a></li>
+          <li><a href="07-error-mitigation.html">7 · Error mitigation</a></li>
+          <li><a href="../index.html">← Back to the story</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine">An independent research prototype &mdash; not affiliated with or endorsed by IBM. Qiskit&reg; and IBM&nbsp;Quantum&reg; are trademarks of IBM. MIT licensed.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="../assets/site.js" defer></script>
+</body>
+</html>

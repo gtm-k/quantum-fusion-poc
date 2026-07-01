@@ -8,6 +8,8 @@
 
 *An independent research prototype — not affiliated with or endorsed by IBM. Qiskit® and IBM Quantum® are trademarks of IBM.*
 
+> **📖 Visual walkthrough → https://gtm-k.github.io/quantum-fusion-poc/** — a scrollable, illustrated version of this README, the findings, and the seven concept primers. (Lives in [`docs/`](docs/); served via GitHub Pages.)
+
 A small, honest prototype: compute the binding behaviour of a tungsten–hydrogen
 system on a quantum computer using the Variational Quantum Eigensolver (VQE).
 The fusion-reactor motivation is real; the current quantum hardware can only

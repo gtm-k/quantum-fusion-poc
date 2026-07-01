@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<title>Quantum Fusion POC — tungsten–hydrogen binding via VQE on real quantum hardware</title>
+<meta name="description" content="A VQE proof-of-concept that runs the full quantum-chemistry pipeline on real tungsten chemistry on real IBM Quantum hardware, and measures how far today's machines are from trustworthy chemistry." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/site.css" />
+</head>
+<body>
+
+<div class="progress" aria-hidden="true"></div>
+
+<!-- ============ NAV ============ -->
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+      Quantum Fusion POC
+    </a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    <div class="nav-links">
+      <a href="#story">The story</a>
+      <a href="#notebooks">Notebooks</a>
+      <a href="#verdict">Verdict</a>
+      <a href="concepts/">Concepts</a>
+      <a href="faq.html">FAQ</a>
+      <a class="nav-cta" href="https://github.com/gtm-k/quantum-fusion-poc">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ ① HERO ============ -->
+<header class="band" style="padding-top:72px;">
+  <div class="wrap split">
+    <div>
+      <h1 class="display" data-hero>Tungsten, hydrogen, and the limits of today&rsquo;s quantum computers.</h1>
+      <p class="lead" data-hero>A VQE proof-of-concept that runs the <strong>full quantum-chemistry pipeline</strong> on real tungsten chemistry &mdash; on real IBM&nbsp;Quantum hardware &mdash; then measures exactly how far today&rsquo;s machines are from trustworthy chemistry.</p>
+      <div class="chips" data-hero style="margin:1.6rem 0;">
+        <span class="chip"><span class="dot"></span>3 notebooks</span>
+        <span class="chip"><span class="dot teal"></span>3 real QPU runs</span>
+        <span class="chip"><span class="dot amber"></span>MIT licensed</span>
+        <span class="chip">Research prototype</span>
+      </div>
+      <div data-hero style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+        <a class="btn btn-primary btn-arrow" href="#story">Read the story <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-ghost" href="#verdict">Jump to the verdict</a>
+      </div>
+    </div>
+    <div class="figure" data-hero aria-hidden="true">
+      <!-- Abstract W–H mark: tungsten (large) bonded to hydrogen (small), with an orbital and a measurement arrow -->
+      <svg viewBox="0 0 360 320" role="img" aria-label="Stylised tungsten–hydrogen molecule">
+        <ellipse cx="150" cy="170" rx="150" ry="60" fill="none" stroke="#e6dfd8" stroke-width="1.4" transform="rotate(-18 150 170)"/>
+        <ellipse cx="150" cy="170" rx="120" ry="44" fill="none" stroke="#ebe6df" stroke-width="1.2" transform="rotate(24 150 170)"/>
+        <line x1="150" y1="170" x2="270" y2="118" stroke="#181715" stroke-width="2"/>
+        <circle cx="150" cy="170" r="46" fill="#181715"/>
+        <text x="150" y="170" text-anchor="middle" dominant-baseline="central" fill="#faf9f5" font-family="Cormorant Garamond, serif" font-size="34" font-weight="500">W</text>
+        <circle cx="270" cy="118" r="22" fill="#cc785c"/>
+        <text x="270" y="118" text-anchor="middle" dominant-baseline="central" fill="#fff" font-family="Cormorant Garamond, serif" font-size="20" font-weight="500">H</text>
+        <circle cx="58" cy="118" r="5" fill="#45a08e"/>
+        <circle cx="232" cy="232" r="5" fill="#45a08e"/>
+        <circle cx="92" cy="232" r="4" fill="#45a08e"/>
+        <path class="draw" d="M150 170 L150 60" fill="none" stroke="#cc785c" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#ha)"/>
+        <text x="150" y="48" text-anchor="middle" fill="#b0583b" font-family="JetBrains Mono, monospace" font-size="12">measure ⟨H⟩</text>
+        <defs><marker id="ha" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#cc785c"/></marker></defs>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<!-- ============ ② THE FUSION PROBLEM ============ -->
+<section class="band dark" id="story">
+  <div class="wrap">
+    <div class="read">
+      <p class="kicker">Why this matters</p>
+      <h2>A fusion reactor traps tritium in its own walls.</h2>
+      <p class="lead">ITER, DEMO, and every other deuterium&ndash;tritium fusion design lines its inner wall with <strong>tungsten</strong> &mdash; the metal with the highest melting point. Hot plasma slams hydrogen and its radioactive isotope <strong>tritium</strong> into that wall, and some of it gets stuck in microscopic lattice defects.</p>
+      <p>That trapped tritium is a safety, supply, and licensing problem: it is radioactive, expensive to produce, and regulated. For every reactor design, engineers need one number &mdash; <em>how strongly does tritium bind to a tungsten vacancy?</em> That binding energy is just the energy of the trapped atom minus the energy of the free atom. Compute both, subtract.</p>
+    </div>
+    <div class="grid cols-3 reveal-stagger" style="margin-top:48px;">
+      <div class="card dark">
+        <h3>Plasma in</h3>
+        <p>Millions of degrees. Hydrogen and tritium bombard the tungsten wall continuously.</p>
+      </div>
+      <div class="card dark">
+        <h3>Tritium trapped</h3>
+        <p>Atoms lodge in vacancy defects in the tungsten crystal &mdash; a growing radioactive inventory.</p>
+      </div>
+      <div class="card dark">
+        <h3>The catch</h3>
+        <p>Predicting the binding energy means computing the energy of electrons around tungsten &mdash; one of the hardest problems in computational science.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ③ THE CATCH (scale) ============ -->
+<section class="band">
+  <div class="wrap split">
+    <div class="read" style="max-width:none;">
+      <p class="kicker">The number that breaks classical computers</p>
+      <h2>Tungsten has 74 electrons. They will not fit.</h2>
+      <p>The electrons all repel each other <em>and</em> must stay quantum-mechanically out of each other&rsquo;s way. The wavefunction of an <span class="mono">N</span>-electron system lives in a space of size roughly <span class="mono">2<sup>N</sup></span>. For H<sub>2</sub> that is trivial. For tungsten it is <span class="mono">2<sup>74</sup></span> &mdash; about <strong>10<sup>22</sup></strong> numbers.</p>
+      <p>That is more than the number of stars in the observable universe. <strong>You cannot store that on any classical computer, ever.</strong> Approximate methods (Hartree&ndash;Fock, DFT) cope for most chemistry, but break down exactly where transition metals like tungsten live: strong electron correlation.</p>
+    </div>
+    <div class="grid cols-2" style="gap:18px;">
+      <div class="stat card plain center">
+        <div class="num coral" data-count="74" data-count-display="74">0</div>
+        <div class="label">electrons in one tungsten atom</div>
+      </div>
+      <div class="stat card plain center">
+        <div class="num">10<sup>22</sup></div>
+        <div class="label">amplitudes in its wavefunction</div>
+      </div>
+      <div class="stat card plain center">
+        <div class="num teal" data-count="2" data-count-display="2">0</div>
+        <div class="label">electrons in H<sub>2</sub> (the easy case)</div>
+      </div>
+      <div class="stat card plain center">
+        <div class="num">0</div>
+        <div class="label">classical computers that can store 10<sup>22</sup> numbers</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ④ WHAT VQE DOES ============ -->
+<section class="band soft">
+  <div class="wrap">
+    <div class="read">
+      <p class="kicker">The algorithm</p>
+      <h2>VQE lets the quantum computer hold the wavefunction.</h2>
+      <p>A quantum computer with <span class="mono">N</span> qubits <em>already is</em> a <span class="mono">2<sup>N</sup></span>-dimensional state space &mdash; it stores wavefunctions natively, for free. The <strong>Variational Quantum Eigensolver</strong> is the workhorse that uses this for chemistry.</p>
+    </div>
+    <div class="diagram-frame reveal" style="margin:32px auto; max-width:760px;">
+      <svg viewBox="0 0 640 230" role="img" aria-label="VQE hybrid loop: a classical optimizer and a quantum computer exchange parameters and energy">
+        <rect x="24" y="74" width="200" height="92" rx="10" fill="#faf9f5" stroke="#e6dfd8" stroke-width="1.4"/>
+        <text x="124" y="106" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" font-weight="600" fill="#141413">Classical optimizer</text>
+        <text x="124" y="128" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#6c6a64">scipy.optimize</text>
+        <text x="124" y="146" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#6c6a64">picks new parameters</text>
+
+        <rect x="416" y="74" width="200" height="92" rx="10" fill="#181715" stroke="#181715"/>
+        <text x="516" y="106" text-anchor="middle" font-family="Inter, sans-serif" font-size="15" font-weight="600" fill="#faf9f5">Quantum computer</text>
+        <text x="516" y="128" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#cdc8bf">prepares |ψ(θ)⟩</text>
+        <text x="516" y="146" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#cdc8bf">measures ⟨ψ|H|ψ⟩</text>
+
+        <path class="draw" d="M224 102 L410 102" fill="none" stroke="#cc785c" stroke-width="2" marker-end="url(#va)"/>
+        <text x="317" y="92" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#b15e42">θ parameters</text>
+        <path class="draw" d="M410 140 L230 140" fill="none" stroke="#45a08e" stroke-width="2" marker-end="url(#vb)"/>
+        <text x="320" y="158" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#2f6b5e">E energy</text>
+        <text x="320" y="206" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#6c6a64">repeat until the energy stops going down</text>
+        <defs>
+          <marker id="va" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#cc785c"/></marker>
+          <marker id="vb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#45a08e"/></marker>
+        </defs>
+      </svg>
+      <figcaption class="mono" style="text-align:center; color:var(--muted); font-size:0.8rem;">A hybrid quantum&ndash;classical loop. It is &ldquo;hot or cold,&rdquo; with the QPU holding the wavefunction.</figcaption>
+    </div>
+    <div class="read note key">
+      <span class="note-label">VQE in one paragraph</span>
+      <p>Build a parameterised quantum circuit &mdash; a recipe that, given a set of knobs, prepares some quantum state. Measure that state&rsquo;s energy. A classical optimizer nudges the knobs to lower it. Repeat until the energy stops dropping. The lowest energy you reach is your estimate of the ground state.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ⑤ THREE NOTEBOOKS (pinned ladder) ============ -->
+<section class="band" id="notebooks">
+  <div class="wrap">
+    <p class="kicker">A learning ladder</p>
+    <h2>Three notebooks, trivial to ambitious.</h2>
+    <p class="read" style="margin-left:0;">Each notebook stands alone; together they climb from &ldquo;hello, quantum&rdquo; to real tungsten chemistry. Every rung was executed end-to-end on real IBM&nbsp;Quantum hardware.</p>
+  </div>
+  <div data-pin-ladder style="margin-top:40px; overflow:hidden;">
+    <div class="ladder-track wrap" style="display:flex; gap:24px; max-width:none; padding-right:24px;">
+      <article class="card" style="flex:0 0 380px;">
+        <span class="tag teal">Notebook 1 · 2 circuit qubits</span>
+        <h3 style="margin-top:14px;">Bell state</h3>
+        <p><code>01_hello_quantum.ipynb</code></p>
+        <p>Save credentials, build the simplest entangled state, run it on the Aer simulator and then on a real QPU. A counts-based first look at entanglement and noise.</p>
+        <div class="note" style="margin:0;">
+          <span class="note-label">Hardware</span>
+          <p style="margin:0;">Run on <span class="mono">ibm_marrakesh</span> (2026-05-27). ~2.7% spurious counts &mdash; the first noise signature.</p>
+        </div>
+      </article>
+      <article class="card" style="flex:0 0 380px;">
+        <span class="tag teal">Notebook 2 · 2 circuit qubits</span>
+        <h3 style="margin-top:14px;">H<sub>2</sub> binding</h3>
+        <p><code>02_h2_binding.ipynb</code></p>
+        <p>The canonical VQE chemistry problem. A hardcoded STO-3G Hamiltonian; VQE recovers the exact FCI ground state to ~2.45 nanohartree on the simulator.</p>
+        <div class="note" style="margin:0;">
+          <span class="note-label">Hardware</span>
+          <p style="margin:0;">Single-point validated on <span class="mono">ibm_marrakesh</span>. ΔE ≈ <strong>+30.6 mHa</strong> (no mitigation).</p>
+        </div>
+      </article>
+      <article class="card" style="flex:0 0 380px;">
+        <span class="tag coral">Notebook 3 · 6 circuit qubits</span>
+        <h3 style="margin-top:14px;">WH<sup>&minus;</sup> binding</h3>
+        <p><code>03_wh_binding.ipynb</code></p>
+        <p>The main event. Tungsten hydride anion via pyscf + qiskit-nature. CAS(4,4) → ParityMapper → EfficientSU2(reps=4), computing a potential-energy curve.</p>
+        <div class="note" style="margin:0;">
+          <span class="note-label">Hardware</span>
+          <p style="margin:0;">Single-point validated on <span class="mono">ibm_fez</span>. ΔE ≈ <strong>+199.8 mHa</strong> (no mitigation).</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ⑥ TODAY ↔ FUTURE ============ -->
+<section class="band dark">
+  <div class="wrap">
+    <p class="kicker">Scales by parameters, not architecture</p>
+    <h2>The same code, today and in 2029+.</h2>
+    <div class="grid cols-2 reveal-stagger" style="margin-top:36px; align-items:stretch;">
+      <div class="card dark" style="background:#1f1e1b;">
+        <span class="tag teal">Today &mdash; this repo</span>
+        <h3 style="margin-top:14px;">WH<sup>&minus;</sup> on a NISQ chip</h3>
+        <ul style="color:var(--on-dark-soft); padding-left:1.1rem; line-height:1.9;">
+          <li>4 active electrons, 4 active orbitals</li>
+          <li><strong style="color:#fff;">6 circuit qubits</strong> (post Z<sub>2</sub> tapering)</li>
+          <li>EfficientSU2 ansatz</li>
+          <li>Aer simulator + single-point QPU</li>
+          <li>→ a 3.11&nbsp;eV well depth <em>(caveat below)</em></li>
+        </ul>
+      </div>
+      <div class="card dark" style="background:#1f1e1b;">
+        <span class="tag coral">Future &mdash; 2029+, FT hardware</span>
+        <h3 style="margin-top:14px;">A tungsten vacancy cluster</h3>
+        <ul style="color:var(--on-dark-soft); padding-left:1.1rem; line-height:1.9;">
+          <li>20+ active electrons and orbitals</li>
+          <li><strong style="color:#fff;">200+ logical qubits</strong> (error-corrected)</li>
+          <li>UCCSD-trotterized or QPE</li>
+          <li>Fault-tolerant QPU</li>
+          <li>→ genuine chemical accuracy</li>
+        </ul>
+      </div>
+    </div>
+    <p class="read" style="margin:32px auto 0; text-align:center; color:var(--on-dark);">What changes between the two is <strong style="color:#fff;">geometry, basis, active space, ansatz, and backend</strong> &mdash; not the architecture. The validated scaffold is the deliverable.</p>
+  </div>
+</section>
+
+<!-- ============ ⑦ THE VERDICT ============ -->
+<section class="band" id="verdict">
+  <div class="wrap">
+    <p class="kicker">So… did it work?</p>
+    <h2>Yes &mdash; as a workflow proof and a hardware benchmark.</h2>
+    <p class="serif-quote read" style="margin-left:0;">It ran the complete quantum-chemistry pipeline on real tungsten chemistry on real quantum hardware, and measured how far today&rsquo;s machines are from trustworthy chemistry: the noise exceeds the signal, mitigation helps but overshoots, and chemical accuracy needs error correction.</p>
+
+    <h3 style="margin-top:48px;">Noise scales steeply with circuit depth</h3>
+    <div class="grid cols-4 reveal-stagger" style="margin-top:18px;">
+      <div class="stat">
+        <div class="num" data-count="2.7" data-decimals="1" data-suffix="%" data-count-display="2.7%">0%</div>
+        <div class="label">Bell state spurious counts (1 layer)</div>
+      </div>
+      <div class="stat">
+        <div class="num teal" data-count="30.6" data-decimals="1" data-prefix="+" data-count-display="+30.6">0</div>
+        <div class="label">H<sub>2</sub> ΔE, mHa (2 qubits, shallow)</div>
+      </div>
+      <div class="stat">
+        <div class="num coral" data-count="199.8" data-decimals="1" data-prefix="+" data-count-display="+199.8">0</div>
+        <div class="label">WH<sup>&minus;</sup> ΔE, mHa (6 qubits, ~100 gates)</div>
+      </div>
+      <div class="stat">
+        <div class="num" data-count="97.9" data-decimals="1" data-prefix="−" data-count-display="−97.9">0</div>
+        <div class="label">WH<sup>&minus;</sup> after ZNE, mHa (overshot the floor)</div>
+      </div>
+    </div>
+    <p class="read note key" style="margin-top:28px; margin-left:0;">
+      <span class="note-label">The key read</span>
+      H<sub>2</sub> and WH<sup>&minus;</sup> used the <em>same</em> 4096 shots, yet WH<sup>&minus;</sup>&rsquo;s error was <strong>~6.5× larger</strong>. That ratio tracks circuit depth, not shot count &mdash; the fingerprint of systematic <strong>gate-error bias</strong>, not random noise. On WH<sup>&minus;</sup>, the ~200 mHa noise <strong>exceeded the ~110 mHa well depth it was trying to measure</strong>.
+    </p>
+
+    <div class="split" style="margin-top:48px; align-items:start;">
+      <figure class="figure diagram-frame">
+        <img src="assets/img/pec.svg" alt="WH-minus potential-energy curve: energy versus bond length, with a single minimum near 1.73 angstrom" />
+        <figcaption>The WH<sup>&minus;</sup> potential-energy curve from notebook 03 &mdash; a single minimum, repulsive at short range, flattening at long range.</figcaption>
+      </figure>
+      <div>
+        <h3>Five things it established</h3>
+        <ol style="line-height:1.7; padding-left:1.1rem;">
+          <li>The full VQE-on-real-chemistry pipeline runs end-to-end, and scales by parameters, not architecture.</li>
+          <li>Noise scales with depth; the 6.5× gap at equal shots is the signature of bias, not shot noise.</li>
+          <li>On WH<sup>&minus;</sup>, noise (~200) exceeded the signal (~110) &mdash; today&rsquo;s hardware can&rsquo;t yet see this chemistry.</li>
+          <li>ZNE halved the error magnitude but overshot the variational floor &mdash; magnitude, not reliability.</li>
+          <li>Chemical accuracy (~1.6 mHa) needs ~100×: a fault-tolerance (2029+) story, not a mitigation-tuning one.</li>
+        </ol>
+        <a class="btn btn-ghost btn-arrow" href="findings.html" style="margin-top:8px;">Read the full findings <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ⑧ WHAT THIS IS NOT ============ -->
+<section class="band coral">
+  <div class="wrap">
+    <h2>What this is not.</h2>
+    <p class="lead" style="max-width:720px;">The discipline of knowing what a number is &mdash; and isn&rsquo;t &mdash; is the difference between a research result and a marketing slide. Three things to keep straight:</p>
+    <div class="grid cols-3 reveal-stagger" style="margin-top:32px;">
+      <div class="card plain">
+        <h3>Not a binding energy</h3>
+        <p>The 3.11&nbsp;eV &ldquo;well depth&rdquo; is for the WH<sup>&minus;</sup> anion, a tractable closed-shell proxy &mdash; not the experimental binding energy of neutral WH. Its closeness to literature values is coincidental error cancellation, not physics.</p>
+      </div>
+      <div class="card plain">
+        <h3>Not quantum advantage</h3>
+        <p>CAS(4,4) is small enough that classical CASCI solves it exactly in milliseconds. This is a workflow demonstration on the smallest meaningful instance, not a classical-beating result.</p>
+      </div>
+      <div class="card plain">
+        <h3>Not production chemistry</h3>
+        <p>The result is a validated workflow plus a hardware noise benchmark &mdash; demonstration-grade at ~7 kcal/mol error, well above chemical accuracy. It was never meant to be a trustworthy tungsten answer.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ⑨ SCALING ROADMAP ============ -->
+<section class="band">
+  <div class="wrap">
+    <p class="kicker">Where this goes</p>
+    <h2>NISQ today, fault-tolerant tomorrow.</h2>
+    <div class="diagram-frame reveal" style="margin:28px 0;">
+      <svg viewBox="0 0 720 360" role="img" aria-label="Quantum hardware scaling roadmap: qubit count versus year, with chemistry milestones from this POC to the fault-tolerant fusion target">
+        <!-- zones -->
+        <rect x="64" y="28" width="176" height="276" fill="#eef4f2"/>
+        <rect x="240" y="28" width="150" height="276" fill="#f7efe3"/>
+        <rect x="390" y="28" width="266" height="276" fill="#eef3ee"/>
+        <text x="152" y="46" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#2f6b5e">NISQ era</text>
+        <text x="315" y="46" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#9a6a1d">early FT</text>
+        <text x="523" y="46" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#3f7a4f">fault-tolerant era</text>
+        <!-- axes -->
+        <line x1="64" y1="304" x2="656" y2="304" stroke="#141413" stroke-width="1.4"/>
+        <line x1="64" y1="28" x2="64" y2="304" stroke="#141413" stroke-width="1.4"/>
+        <text x="360" y="340" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#3d3d3a">year →</text>
+        <text x="26" y="166" font-family="Inter, sans-serif" font-size="11" fill="#3d3d3a" transform="rotate(-90 26 166)">algorithmically useful qubits →</text>
+        <!-- year ticks -->
+        <text x="110" y="322" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#6c6a64">2026</text>
+        <text x="240" y="322" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#6c6a64">2027</text>
+        <text x="390" y="322" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#6c6a64">2029</text>
+        <text x="560" y="322" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#6c6a64">2031+</text>
+        <!-- trajectory -->
+        <path class="draw" d="M96 286 Q 200 264 250 220 Q 330 150 410 96 Q 520 52 640 40" fill="none" stroke="#181715" stroke-width="2.4" stroke-dasharray="6 4"/>
+        <!-- milestones -->
+        <circle cx="100" cy="288" r="5" fill="#45a08e"/>
+        <text x="100" y="280" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#2f6b5e">Bell · H₂</text>
+        <circle cx="118" cy="272" r="6" fill="#cc785c"/>
+        <text x="140" y="258" text-anchor="start" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#b15e42">THIS POC — WH⁻ 6q</text>
+        <circle cx="250" cy="214" r="5" fill="#8a6d2f"/>
+        <text x="250" y="206" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#9a6a1d">CAS(10,10)</text>
+        <circle cx="330" cy="156" r="5" fill="#8a6d2f"/>
+        <text x="330" y="148" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#9a6a1d">multi-W cluster</text>
+        <circle cx="430" cy="92" r="7" fill="#cc785c" stroke="#181715" stroke-width="1"/>
+        <text x="430" y="80" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#b15e42">W₈ vacancy + H (logical)</text>
+      </svg>
+      <figcaption>Milestone order and timing &mdash; not a literal resource scaling. NISQ markers are <em>circuit</em> qubits; the fusion target is <em>logical</em> (error-corrected) qubits. Different units; the order-of-magnitude jump is what fault tolerance unlocks.</figcaption>
+    </div>
+    <div class="table-wrap read" style="max-width:none;">
+      <table>
+        <thead><tr><th>Stage</th><th>Qubits</th><th>Type</th><th>Hardware</th><th>Timeline</th></tr></thead>
+        <tbody>
+          <tr><td>This POC</td><td>6</td><td>circuit</td><td>NISQ sim + single-point QPU</td><td>Today</td></tr>
+          <tr><td>Larger basis CAS(6,6)</td><td>~10</td><td>circuit</td><td>NISQ, more QPU minutes</td><td>Today, paid</td></tr>
+          <tr><td>Multi-W cluster</td><td>20&ndash;40</td><td>circuit</td><td>Late-NISQ + mitigation</td><td>~2027</td></tr>
+          <tr><td>W<sub>8</sub> vacancy + H</td><td>200+</td><td>logical</td><td>Fault-tolerant QPU</td><td>2029+</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ⑩ EXPLORE DEEPER ============ -->
+<section class="band soft">
+  <div class="wrap">
+    <p class="kicker">Go deeper</p>
+    <h2>Read the pieces that interest you.</h2>
+    <div class="grid cols-3 reveal-stagger" style="margin-top:32px;">
+      <a class="card link-card" href="concepts/">
+        <h3>7 concept primers</h3>
+        <p>Qubits, Hamiltonians, the VQE loop, active spaces, scaling, sim-vs-QPU, error mitigation &mdash; ~300 words each, one diagram each.</p>
+        <span class="go">Start with qubits →</span>
+      </a>
+      <a class="card link-card" href="findings.html">
+        <h3>Findings &amp; lessons</h3>
+        <p>The full synthesis of what the prototype demonstrated, and exactly where today&rsquo;s hardware sits relative to a real chemistry target.</p>
+        <span class="go">Read the verdict →</span>
+      </a>
+      <a class="card link-card" href="faq.html">
+        <h3>FAQ</h3>
+        <p>Did it beat classical? Why WH<sup>&minus;</sup>? Did you really run it on hardware? The questions this POC tends to provoke.</p>
+        <span class="go">Browse answers →</span>
+      </a>
+      <a class="card link-card" href="https://github.com/gtm-k/quantum-fusion-poc/tree/master/notebooks">
+        <h3>The notebooks</h3>
+        <p>Three Jupyter notebooks in learning order, on GitHub. Clone, run on the simulator free, validate on a QPU.</p>
+        <span class="go">Open on GitHub ↗</span>
+      </a>
+      <a class="card link-card" href="https://github.com/gtm-k/quantum-fusion-poc">
+        <h3>The repository</h3>
+        <p>Scripts, result artifacts (job IDs, backends, energies), and the full README. MIT licensed.</p>
+        <span class="go">View source ↗</span>
+      </a>
+      <a class="card link-card" href="concepts/05-scaling-roadmap.html">
+        <h3>Scaling roadmap</h3>
+        <p>How the same pipeline bridges the NISQ era and the fault-tolerant future, one parameter swap at a time.</p>
+        <span class="go">See the roadmap →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ⑪ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="index.html">
+          <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color:#cc785c;"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+          Quantum Fusion POC
+        </a>
+        <p style="margin-top:14px; max-width:34ch;">A methodology proof for the fault-tolerant era: the full quantum-chemistry pipeline on real tungsten chemistry, on real IBM&nbsp;Quantum hardware.</p>
+      </div>
+      <div>
+        <p class="foot-h">Explore</p>
+        <ul>
+          <li><a href="#story">The story</a></li>
+          <li><a href="#verdict">The verdict</a></li>
+          <li><a href="concepts/">Concepts</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="findings.html">Findings</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-h">Project</p>
+        <ul>
+          <li><a href="https://github.com/gtm-k/quantum-fusion-poc">GitHub repo ↗</a></li>
+          <li><a href="https://github.com/gtm-k/quantum-fusion-poc/blob/master/LICENSE">MIT License ↗</a></li>
+          <li><a href="https://github.com/gtm-k/quantum-fusion-poc/blob/master/CITATION.cff">Citation ↗</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine">An independent research prototype &mdash; not affiliated with or endorsed by IBM. Qiskit&reg; and IBM&nbsp;Quantum&reg; are trademarks of IBM. Numbers are reproducible on the IBM Open plan (free tier). MIT licensed.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="assets/site.js" defer></script>
+</body>
+</html>

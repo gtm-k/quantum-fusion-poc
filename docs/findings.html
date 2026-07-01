@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<title>Findings &amp; lessons — Quantum Fusion POC</title>
+<meta name="description" content="A plain-English synthesis of what the VQE proof-of-concept actually demonstrated on real IBM Quantum hardware — and exactly how far today's machines are from trustworthy tungsten chemistry." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/site.css" />
+</head>
+<body>
+
+<div class="progress" aria-hidden="true"></div>
+
+<!-- ============ NAV ============ -->
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+      Quantum Fusion POC
+    </a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    <div class="nav-links">
+      <a href="index.html#story">The story</a>
+      <a href="index.html#notebooks">Notebooks</a>
+      <a href="index.html#verdict">Verdict</a>
+      <a href="concepts/">Concepts</a>
+      <a href="faq.html">FAQ</a>
+      <a class="nav-cta" href="https://github.com/gtm-k/quantum-fusion-poc">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HEADER ============ -->
+<header class="band band-tight">
+  <div class="wrap read">
+    <h1>Findings &amp; lessons</h1>
+    <p class="lead">A plain-English synthesis of what this proof-of-concept actually demonstrated. For the raw per-run numbers see the <a href="https://github.com/gtm-k/quantum-fusion-poc#result-snapshot">README result table</a> and <a href="https://github.com/gtm-k/quantum-fusion-poc/tree/master/results/qpu_runs"><code>results/qpu_runs/</code></a>; for the concepts behind them see the <a href="concepts/">seven concept primers</a>.</p>
+    <p class="serif-quote">We proved the entire quantum-chemistry pipeline runs end-to-end on real tungsten chemistry on real IBM&nbsp;Quantum hardware &mdash; and we measured, transparently, exactly how far today&rsquo;s machines are from trustworthy chemistry.</p>
+  </div>
+</header>
+
+<!-- ============ LESSONS ============ -->
+<section class="band">
+  <div class="wrap read">
+
+    <!-- Lesson 1 -->
+    <h2>The workflow works &mdash; and it scales by parameters, not architecture</h2>
+    <p>Three experiments of rising difficulty were validated on real IBM&nbsp;Quantum hardware, each with a saved artifact (job ID, backend, shot count): <strong>Bell → H<sub>2</sub> → WH<sup>&minus;</sup></strong>. The full chain runs end-to-end:</p>
+    <pre><code>pyscf Hamiltonian → active space → qubit mapping → ansatz → VQE → QPU validation</code></pre>
+    <p>The same code skeleton extends to the real fusion-relevant problem (a W<sub>8</sub> vacancy cluster with hydrogen, ~200 logical qubits, ~2029+). What changes between &ldquo;today&rdquo; and &ldquo;future&rdquo; is geometry, active space, ansatz, and backend &mdash; <strong>not the architecture</strong>. The validated scaffold <em>is</em> the deliverable.</p>
+
+    <!-- Lesson 2 -->
+    <h2>Noise scales steeply with circuit depth &mdash; and we quantified it</h2>
+    <p>The same pipeline, run at three depths, traces a clean gradient from a single entangling layer to ~100 two-qubit gates:</p>
+    <div class="grid cols-3" style="margin:28px 0;">
+      <div class="stat">
+        <div class="num" data-count="2.7" data-decimals="1" data-suffix="%" data-count-display="2.7%">0%</div>
+        <div class="label">Bell state spurious counts &mdash; 1 layer (28 / 1024)</div>
+      </div>
+      <div class="stat">
+        <div class="num teal" data-count="30.6" data-decimals="1" data-prefix="+" data-count-display="+30.6">0</div>
+        <div class="label">H<sub>2</sub> ΔE, mHa &mdash; 2 qubits, shallow</div>
+      </div>
+      <div class="stat">
+        <div class="num coral" data-count="199.8" data-decimals="1" data-prefix="+" data-count-display="+199.8">0</div>
+        <div class="label">WH<sup>&minus;</sup> ΔE, mHa &mdash; 6 qubits, ~100 two-qubit gates</div>
+      </div>
+    </div>
+    <div class="note key">
+      <span class="note-label">The key observation</span>
+      <p>H<sub>2</sub> and WH<sup>&minus;</sup> used the <em>same</em> 4096 shots, yet WH<sup>&minus;</sup>&rsquo;s error was <strong>~6.5× larger</strong> &mdash; and that ratio tracks <strong>circuit depth</strong>, not shot count. That is the empirical fingerprint that the dominant error is systematic <strong>gate-error bias</strong>, not random shot noise. It is a clean, real-hardware demonstration of the single most important NISQ-era lesson.</p>
+    </div>
+
+    <!-- Lesson 3 -->
+    <h2>On a hard problem today, the noise can exceed the signal</h2>
+    <p>WH<sup>&minus;</sup>&rsquo;s unmitigated hardware noise (~200 mHa) <strong>exceeded the well depth it was trying to measure</strong> (~110 mHa). When the error bar is larger than the quantity itself, the result is physically uninformative <em>as chemistry</em>. This is the crispest possible marker of where current hardware sits relative to a real chemistry target &mdash; and it is reported honestly rather than hidden.</p>
+
+    <!-- Lesson 4 -->
+    <h2>Error mitigation helps in magnitude &mdash; but isn&rsquo;t reliable yet, and can overshoot</h2>
+    <p>A Zero-Noise Extrapolation run (<code>ibm_marrakesh</code>, 2026-05-31, job <code>d8e6ucjo3njc73eub3v0</code>) cut the error magnitude <strong>~2×</strong> &mdash; from +199.8 mHa to <strong>&minus;97.9 mHa</strong>, dipping under the ~110 mHa well depth. <strong>But it overshot:</strong> the mitigated energy (<code>&minus;67.5411 Ha</code>) landed ~87 mHa <em>below</em> the exact CASCI ground state (<code>&minus;67.4545 Ha</code>), which is physically impossible for a true expectation value. ZNE over-extrapolated at this circuit depth &mdash; trading a <em>too-high</em> bias for a <em>too-low</em> overshoot.</p>
+    <p>The lesson is not &ldquo;mitigation failed.&rdquo; It is that at ~100 two-qubit gates, ZNE buys a <strong>magnitude</strong> improvement, not a <strong>reliability</strong> one. Two corollaries:</p>
+    <div class="note caution">
+      <span class="note-label">Two corollaries</span>
+      <ul style="margin:0; padding-left:1.1rem; line-height:1.7;">
+        <li><strong>The variational floor is a free correctness check.</strong> A real energy can never fall below the ground state, so the negative result instantly self-flagged as untrustworthy. See the <a href="concepts/07-error-mitigation.html">error-mitigation primer</a>.</li>
+        <li><strong>More shots would not have helped</strong> &mdash; shots fight <em>variance</em>; this is <em>bias</em>.</li>
+      </ul>
+    </div>
+
+    <!-- Lesson 5 -->
+    <h2>The real unlock is error correction, not cleverness</h2>
+    <p>Error mitigation buys roughly <strong>2&ndash;10×</strong>; reaching chemical accuracy (~1.6 mHa) on this problem needs about <strong>100×</strong>. No amount of mitigation tuning closes that gap on today&rsquo;s chips &mdash; it is a <strong>fault-tolerance (2029+) story</strong>. The value of this prototype is that it <em>quantifies the gap precisely</em> instead of hand-waving.</p>
+
+    <!-- Lesson 6 -->
+    <h2>Honest scoping is the product &mdash; what this is <em>not</em></h2>
+    <ul style="line-height:1.8; padding-left:1.1rem;">
+      <li>The WH<sup>&minus;</sup> &ldquo;well depth&rdquo; is <strong>not</strong> the experimental binding energy of neutral WH. It is a tractable closed-shell anion proxy; its proximity to literature values is <strong>coincidental error cancellation, not physics</strong>.</li>
+      <li>This is <strong>not</strong> a quantum-advantage demonstration &mdash; CAS(4,4) is small enough that classical CASCI solves it exactly in milliseconds.</li>
+      <li>The result is a <strong>validated workflow + an honest noise benchmark</strong>, not a trustworthy tungsten chemistry answer.</li>
+    </ul>
+
+  </div>
+</section>
+
+<!-- ============ SO… DID IT WORK? ============ -->
+<section class="band soft">
+  <div class="wrap read">
+    <h2>So… did it work?</h2>
+    <p class="serif-quote">Yes &mdash; as a workflow proof and an honest hardware benchmark. It ran the complete quantum-chemistry pipeline on real tungsten chemistry on real quantum hardware, and it transparently measured how far today&rsquo;s machines are from trustworthy chemistry: the noise exceeds the signal, mitigation helps but overshoots, and chemical accuracy needs error correction (~2029+). It did <em>not</em>, and was never meant to, produce a trustworthy tungsten binding energy.</p>
+  </div>
+</section>
+
+<!-- ============ SUMMARY ============ -->
+<section class="band">
+  <div class="wrap read">
+    <h2>Summary in five bullets</h2>
+    <ol style="line-height:1.8; padding-left:1.2rem;">
+      <li>The full VQE-on-real-chemistry pipeline runs end-to-end on real IBM hardware, and scales to the production problem by parameters, not architecture.</li>
+      <li>Noise scales with circuit depth (2.7% → 30.6 → 199.8 mHa); the 6.5× gap at equal shots is the signature of <strong>bias</strong>, not shot noise.</li>
+      <li>On WH<sup>&minus;</sup>, <strong>noise (~200) exceeded the signal (~110)</strong> &mdash; today&rsquo;s hardware cannot yet see this chemistry.</li>
+      <li>ZNE halved the error magnitude but <strong>overshot the physical floor</strong> &mdash; mitigation buys magnitude, not reliability, at this depth.</li>
+      <li>Chemical accuracy needs <strong>fault tolerance (~2029+)</strong>; this POC quantifies the gap honestly rather than overclaiming.</li>
+    </ol>
+
+    <h3>Keep reading</h3>
+    <p>The <a href="index.html#verdict">story-page verdict</a> is the two-minute version; the <a href="concepts/">seven concept primers</a> unpack each idea, and the <a href="faq.html">FAQ</a> answers the questions this POC tends to provoke.</p>
+
+    <nav class="pager">
+      <a href="index.html#verdict"><span class="dir">← Back</span><span class="ttl">The verdict on the story page</span></a>
+      <a class="next" href="concepts/"><span class="dir">Go deeper →</span><span class="ttl">Seven concept primers</span></a>
+    </nav>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="index.html">
+          <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color:#cc785c;"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+          Quantum Fusion POC
+        </a>
+        <p style="margin-top:14px; max-width:34ch;">A methodology proof for the fault-tolerant era: the full quantum-chemistry pipeline on real tungsten chemistry, on real IBM&nbsp;Quantum hardware.</p>
+      </div>
+      <div>
+        <p class="foot-h">Explore</p>
+        <ul>
+          <li><a href="index.html#story">The story</a></li>
+          <li><a href="index.html#verdict">The verdict</a></li>
+          <li><a href="concepts/">Concepts</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="findings.html">Findings</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-h">Project</p>
+        <ul>
+          <li><a href="https://github.com/gtm-k/quantum-fusion-poc">GitHub repo ↗</a></li>
+          <li><a href="https://github.com/gtm-k/quantum-fusion-poc/blob/master/LICENSE">MIT License ↗</a></li>
+          <li><a href="https://github.com/gtm-k/quantum-fusion-poc/blob/master/CITATION.cff">Citation ↗</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine">An independent research prototype &mdash; not affiliated with or endorsed by IBM. Qiskit&reg; and IBM&nbsp;Quantum&reg; are trademarks of IBM. Numbers are reproducible on the IBM Open plan (free tier). MIT licensed.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="assets/site.js" defer></script>
+</body>
+</html>

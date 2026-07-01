@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<title>Concept primers — Quantum Fusion POC</title>
+<meta name="description" content="Seven short reads, in order — qubits, Hamiltonians, the VQE loop, active spaces, scaling, simulator vs QPU, and error mitigation." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../assets/site.css" />
+</head>
+<body>
+<div class="progress" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="../index.html">
+      <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+      Quantum Fusion POC
+    </a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    <div class="nav-links">
+      <a href="../index.html#story">The story</a>
+      <a href="../index.html#notebooks">Notebooks</a>
+      <a href="index.html">Concepts</a>
+      <a href="../faq.html">FAQ</a>
+      <a class="nav-cta" href="https://github.com/gtm-k/quantum-fusion-poc">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<header class="band band-tight">
+  <div class="wrap">
+    <p class="kicker">Seven short reads, in order</p>
+    <h1>Concept primers</h1>
+    <p class="lead read" style="margin-left:0;">Each one is about 300 words with a single anchor diagram and a &ldquo;why this matters for our problem&rdquo; tie-back. They&rsquo;re designed to build on each other &mdash; read them straight through, or dip into the one you need.</p>
+  </div>
+</header>
+
+<section class="band-tight" style="padding-top:0;">
+  <div class="wrap">
+    <h2 style="margin-bottom:20px;">The seven primers</h2>
+    <div class="grid cols-2 reveal-stagger">
+      <a class="card link-card" href="01-qubits-and-superposition.html">
+        <span class="tag neutral">Concept 1</span>
+        <h3 style="margin-top:12px;">Qubits &amp; superposition</h3>
+        <p>Why a qubit isn&rsquo;t just a probabilistic bit, and where the exponential power comes from.</p>
+        <span class="go">Read →</span>
+      </a>
+      <a class="card link-card" href="02-hamiltonians.html">
+        <span class="tag neutral">Concept 2</span>
+        <h3 style="margin-top:12px;">Hamiltonians &amp; ground states</h3>
+        <p>What &ldquo;find the ground state&rdquo; actually means, and why it&rsquo;s the chemistry question.</p>
+        <span class="go">Read →</span>
+      </a>
+      <a class="card link-card" href="03-vqe-loop.html">
+        <span class="tag neutral">Concept 3</span>
+        <h3 style="margin-top:12px;">The VQE loop</h3>
+        <p>The hybrid quantum&ndash;classical algorithm at the heart of this repo.</p>
+        <span class="go">Read →</span>
+      </a>
+      <a class="card link-card" href="04-active-spaces.html">
+        <span class="tag neutral">Concept 4</span>
+        <h3 style="margin-top:12px;">Active spaces</h3>
+        <p>Why 6 circuit qubits are enough for WH<sup>&minus;</sup> and nowhere near enough for the real fusion problem.</p>
+        <span class="go">Read →</span>
+      </a>
+      <a class="card link-card" href="05-scaling-roadmap.html">
+        <span class="tag neutral">Concept 5</span>
+        <h3 style="margin-top:12px;">Scaling roadmap</h3>
+        <p>NISQ today → fault-tolerant tomorrow, and what the same code lets you do at each stage.</p>
+        <span class="go">Read →</span>
+      </a>
+      <a class="card link-card" href="06-sim-vs-qpu.html">
+        <span class="tag neutral">Concept 6</span>
+        <h3 style="margin-top:12px;">Simulator vs QPU</h3>
+        <p>The train-on-sim, validate-on-QPU pattern that makes a real-hardware claim credible.</p>
+        <span class="go">Read →</span>
+      </a>
+      <a class="card link-card" href="07-error-mitigation.html">
+        <span class="tag neutral">Concept 7</span>
+        <h3 style="margin-top:12px;">Error mitigation</h3>
+        <p>Why more shots can&rsquo;t fix a biased chip, and how ZNE attacks the bias.</p>
+        <span class="go">Read →</span>
+      </a>
+      <div class="card plain" style="display:flex; flex-direction:column; justify-content:center;">
+        <h3 style="margin-top:0;">If you only read one</h3>
+        <p>Read <a href="04-active-spaces.html">Active spaces</a>. It&rsquo;s the single idea that makes the rest of the repo make sense &mdash; and the answer to &ldquo;how can a 6-qubit chip say anything about a 74-electron tungsten atom?&rdquo;</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="../index.html">
+          <svg class="spike" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color:#cc785c;"><path d="M12 1 L14.5 9.5 L23 12 L14.5 14.5 L12 23 L9.5 14.5 L1 12 L9.5 9.5 Z"/></svg>
+          Quantum Fusion POC
+        </a>
+        <p style="margin-top:14px; max-width:34ch;">A methodology proof for the fault-tolerant era, on real IBM&nbsp;Quantum hardware.</p>
+      </div>
+      <div>
+        <p class="foot-h">Explore</p>
+        <ul>
+          <li><a href="../index.html#story">The story</a></li>
+          <li><a href="../index.html#verdict">The verdict</a></li>
+          <li><a href="../findings.html">Findings</a></li>
+          <li><a href="../faq.html">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="foot-h">Project</p>
+        <ul>
+          <li><a href="https://github.com/gtm-k/quantum-fusion-poc">GitHub repo ↗</a></li>
+          <li><a href="https://github.com/gtm-k/quantum-fusion-poc/blob/master/LICENSE">MIT License ↗</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="fine">An independent research prototype &mdash; not affiliated with or endorsed by IBM. Qiskit&reg; and IBM&nbsp;Quantum&reg; are trademarks of IBM. MIT licensed.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="../assets/site.js" defer></script>
+</body>
+</html>

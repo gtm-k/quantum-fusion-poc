@@ -1,4 +1,4 @@
-# Lets GitHub render a "Cite this repository" button.
+# Lets GitHub render a "Cite this repository" button and feeds Zenodo at release.
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: "Quantum Fusion POC — tungsten–hydrogen binding via VQE"
@@ -9,11 +9,13 @@ abstract: >-
   Extrapolation (ZNE) error mitigation.
 type: software
 version: "0.1.0"
-date-released: "2026-05-31"
+date-released: "2026-07-02"
 license: MIT
 repository-code: "https://github.com/gtm-k/quantum-fusion-poc"
 authors:
-  - name: "Gowtham"
+  - family-names: "Kethineedi"
+    given-names: "Gowtham"
+    orcid: "https://orcid.org/0009-0007-4175-203X"
 keywords:
   - quantum computing
   - variational quantum eigensolver

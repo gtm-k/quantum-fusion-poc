@@ -5,6 +5,7 @@
 [![Qiskit](https://img.shields.io/badge/Qiskit-2.4-6929C4.svg)](https://www.ibm.com/quantum/qiskit)
 [![qiskit-ibm-runtime](https://img.shields.io/badge/qiskit--ibm--runtime-0.47-6929C4.svg)](https://docs.quantum.ibm.com/api/qiskit-ibm-runtime)
 ![Status: research prototype](https://img.shields.io/badge/status-research%20prototype-orange.svg)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21136449.svg)](https://doi.org/10.5281/zenodo.21136449)
 
 *An independent research prototype — not affiliated with or endorsed by IBM. Qiskit® and IBM Quantum® are trademarks of IBM.*
 
